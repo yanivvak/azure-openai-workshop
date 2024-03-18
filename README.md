@@ -26,7 +26,7 @@ To use sample codes in this repo, we suggest you setup .env file where you store
 ### Setup
 0. Clone the repo
 ```bash
-git clone (path)
+git clone https://github.com/yanivvak/azure-openai-workshop.git
 ```
 
 1. set up a virtual environment (optional)
