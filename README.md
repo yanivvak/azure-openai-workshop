@@ -8,7 +8,7 @@ This repository is a compilation of useful Azure OpenAI Service resources and co
 - **Azure subscription with access enabled for the Azure OpenAI Service** - For more details, see the [Azure OpenAI Service documentation on how to get access](https://learn.microsoft.com/azure/ai-services/openai/overview#how-do-i-get-access-to-azure-openai). 
 - **Azure Open AI resource** - For these samples, you'll need to deploy models like GPT-3.5 Turbo, GPT 4, DALL-E, and Whisper. See the Azure OpenAI Service documentation for more details on [deploying models](https://learn.microsoft.com/azure/ai-services/openai/how-to/create-resource?pivots=web-portal) and [model availability](https://learn.microsoft.com/azure/ai-services/openai/concepts/models).
 
-### 2.Setup
+### 2. Setup
 0. Clone the repo
 ```bash
 git clone https://github.com/yanivvak/azure-openai-workshop.git
@@ -19,7 +19,7 @@ git clone https://github.com/yanivvak/azure-openai-workshop.git
 python3 -m venv workshop
 source workshop-env/bin/activate
 ```
-To deactivate :
+> To deactivate :
 ```bash
 deactivate
 ```
@@ -30,6 +30,7 @@ deactivate
 pip install -r requirements.txt
 ```
 3. Update credentials
-You can setup .env file where you store key information for Azure services[.env.sample](./.env.sample) file for example.
-1. Update the file with your credentials 
-2. Save it as .env
+
+> You can setup .env file where you store key information for Azure services, check [.env.sample](./.env.sample) for example.
+   - Update the file with your credentials
+   - Save it as .env
