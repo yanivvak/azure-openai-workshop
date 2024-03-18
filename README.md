@@ -13,11 +13,13 @@ This repository is a compilation of useful Azure OpenAI Service resources and co
 ```bash
 git clone https://github.com/yanivvak/azure-openai-workshop.git
 ```
-
+```bash
+cd azure-openai-workshop
+```
 1. Set up a virtual environment (Prefered)
 ```bash
 python3 -m venv workshop
-source workshop-env/bin/activate
+source workshop/bin/activate
 ```
 > To deactivate :
 ```bash
