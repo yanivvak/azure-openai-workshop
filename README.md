@@ -38,7 +38,6 @@ To deactivate :
 ```bash
 deactivate
 ```
-deactivate
 > More information about virtual environments can be found [here](https://docs.python.org/3/tutorial/venv.html)
 
 2. install requirements
