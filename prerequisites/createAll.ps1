@@ -1,5 +1,5 @@
 $SubscriptionId = ''
-$resourceGroupName = "openai-workshop"
+$resourceGroupName = "aoai-workshop"
 $location = "swedencentral"
 
 # Set subscription 
