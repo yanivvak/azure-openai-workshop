@@ -29,8 +29,8 @@ workshop\Scripts\activate
 On Unix or MacOS, run:
 ```bash
 source workshop/bin/activate
-'''
-> To deactivate :
+```
+To deactivate :
 ```bash
 deactivate
 ```
