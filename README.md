@@ -18,9 +18,18 @@ cd azure-openai-workshop
 ```
 1. Set up a virtual environment (Preferred)
 ```bash
-python3 -m venv workshop
-source workshop/bin/activate
+python -m venv workshop
 ```
+Once you’ve created a virtual environment, you may activate it.
+
+On Windows, run:
+```bash
+workshop\Scripts\activate
+```
+On Unix or MacOS, run:
+```bash
+source workshop/bin/activate
+'''
 > To deactivate :
 ```bash
 deactivate
