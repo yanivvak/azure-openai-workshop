@@ -105,7 +105,8 @@
     },    
     {    
       "type": "Microsoft.KeyVault/vaults@2023-07-01",    
-      "name": "[parameters('keyVaultName')]",    
+      "name": "[parameters('keyVaultName')]",
+      "apiVersion": "2023-07-01", 
       "location": "[parameters('location')]",    
       "properties": {    
         "sku": {    
@@ -119,6 +120,7 @@
     {    
       "type": "Microsoft.ContainerRegistry/registries@2023-01-01-preview",    
       "name": "[parameters('acrName')]",    
+      "apiVersion": "2023-01-01-preview", 
       "location": "[parameters('location')]",    
       "sku": {    
         "name": "Basic"    
@@ -129,7 +131,8 @@
     },    
     {    
       "type": "Microsoft.CognitiveServices/accounts@2023-05-01",    
-      "name": "[parameters('openaiModelName')]",    
+      "name": "[parameters('openaiModelName')]", 
+      "apiVersion": "2023-05-01",    
       "location": "[parameters('location')]",    
       "kind": "OpenAI",    
       "sku": {    
@@ -144,6 +147,7 @@
     {    
       "type": "Microsoft.CognitiveServices/accounts/deployments@2023-05-01",    
       "name": "gpt-4o",    
+      "apiVersion": "2023-05-01",
       "sku": {    
         "name": "Standard",    
         "capacity": 1    
@@ -164,6 +168,7 @@
     {    
       "type": "Microsoft.Communication/CommunicationServices@2023-04-01-preview",    
       "name": "[parameters('acsName')]",    
+      "apiVersion": "2023-04-01-preview",
       "location": "global",    
       "properties": {    
         "dataLocation": "europe"    
