@@ -18,3 +18,6 @@
 - Upload the files located in the `scripts` folder `createAll.ps1` and `deployAll.bicep`, ONE BY ONE by using the upload file button in the cloud shell
 - Run `./createAll.ps1` in the cloud shell to create the resources
 
+####
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2Fyanivvak%2Fazure-openai-workshop%2Fblob%2Fmain%2Fprerequisites%2Fdeploy1.json)
