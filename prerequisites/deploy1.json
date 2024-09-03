@@ -1,0 +1,194 @@
+{  
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",  
+  "contentVersion": "1.0.0.0",  
+  "parameters": {  
+    "location": {  
+      "type": "string",  
+      "defaultValue": "swedencentral",  
+      "metadata": {  
+        "description": "The location into which the resources should be deployed."  
+      }  
+    },  
+    "postgresServerName": {  
+      "type": "string",  
+      "defaultValue": "socmotserver",  
+      "metadata": {  
+        "description": "The name of the Azure PostgreSQL server."  
+      }  
+    },  
+    "postgresDbName": {  
+      "type": "string",  
+      "defaultValue": "socimotdb",  
+      "metadata": {  
+        "description": "The name of the PostgreSQL database."  
+      }  
+    },  
+    "adminUsername": {  
+      "type": "string",  
+      "defaultValue": "pgadmin",  
+      "metadata": {  
+        "description": "The administrator login username for the PostgreSQL server."  
+      }  
+    },  
+    "adminPassword": {  
+      "type": "securestring",  
+      "metadata": {  
+        "description": "The administrator login password for the PostgreSQL server."  
+      }  
+    },  
+    "storageSizeGB": {  
+      "type": "int",  
+      "defaultValue": 32,  
+      "metadata": {  
+        "description": "The storage size in GBs"  
+      }  
+    },  
+    "keyVaultName": {  
+      "type": "string",  
+      "defaultValue": "socmotkv",  
+      "metadata": {  
+        "description": "The name of the Key Vault."  
+      }  
+    },  
+    "acrName": {  
+      "type": "string",  
+      "defaultValue": "socmotacr",  
+      "metadata": {  
+        "description": "The name of the Azure Container Registry."  
+      }  
+    },  
+    "openaiModelName": {  
+      "type": "string",  
+      "defaultValue": "socmotoai",  
+      "metadata": {  
+        "description": "The name of the Azure OpenAI model instance."  
+      }  
+    },  
+    "acsName": {  
+      "type": "string",  
+      "defaultValue": "socmotacs",  
+      "metadata": {  
+        "description": "The name of the Azure Communication Services resource."  
+      }  
+    }  
+  },  
+  "resources": [  
+    {  
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview",  
+      "name": "[parameters('postgresServerName')]",  
+      "location": "[parameters('location')]",  
+      "sku": {  
+        "name": "Standard_B1ms",  
+        "tier": "Burstable"  
+      },  
+      "properties": {  
+        "administratorLogin": "[parameters('adminUsername')]",  
+        "administratorLoginPassword": "[parameters('adminPassword')]",  
+        "version": "16",  
+        "storage": {  
+          "storageSizeGB": "[parameters('storageSizeGB')]"  
+        }  
+      }  
+    },  
+    {  
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12-01-preview",  
+      "name": "[parameters('postgresDbName')]",  
+      "apiVersion": "2023-12-01-preview",  
+      "dependsOn": [  
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('postgresServerName'))]"  
+      ],  
+      "properties": {  
+        "charset": "UTF8",  
+        "collation": "en_US.UTF8"  
+      }  
+    },  
+    {  
+      "type": "Microsoft.KeyVault/vaults@2023-07-01",  
+      "name": "[parameters('keyVaultName')]",  
+      "location": "[parameters('location')]",  
+      "properties": {  
+        "sku": {  
+          "family": "A",  
+          "name": "standard"  
+        },  
+        "tenantId": "[subscription().tenantId]",  
+        "accessPolicies": []  
+      }  
+    },  
+    {  
+      "type": "Microsoft.ContainerRegistry/registries@2023-01-01-preview",  
+      "name": "[parameters('acrName')]",  
+      "location": "[parameters('location')]",  
+      "sku": {  
+        "name": "Basic"  
+      },  
+      "properties": {  
+        "adminUserEnabled": true  
+      }  
+    },  
+    {  
+      "type": "Microsoft.CognitiveServices/accounts@2023-05-01",  
+      "name": "[parameters('openaiModelName')]",  
+      "location": "[parameters('location')]",  
+      "kind": "OpenAI",  
+      "sku": {  
+        "name": "S0"  
+      },  
+      "properties": {  
+        "apiProperties": {  
+          "model": "gpt-4o"  
+        }  
+      }  
+    },  
+    {  
+      "type": "Microsoft.CognitiveServices/accounts/deployments@2023-05-01",  
+      "name": "gpt-4o",  
+      "sku": {  
+        "name": "Standard",  
+        "capacity": 1  
+      },  
+      "dependsOn": [  
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('openaiModelName'))]"  
+      ],  
+      "properties": {  
+        "model": {  
+          "name": "gpt-4o",  
+          "format": "OpenAI",  
+          "version": "2024-05-13"  
+        },  
+        "raiPolicyName": "Microsoft.Default",  
+        "versionUpgradeOption": "OnceCurrentVersionExpired"  
+      }  
+    },  
+    {  
+      "type": "Microsoft.Communication/CommunicationServices@2023-04-01-preview",  
+      "name": "[parameters('acsName')]",  
+      "location": "global",  
+      "properties": {  
+        "dataLocation": "europe"  
+      }  
+    }  
+  ],  
+  "outputs": {  
+    "postgresServerName": {  
+      "type": "string",  
+      "value": "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('postgresServerName'))]"  
+    },  
+    "postgresAdminUsername": {  
+      "type": "string",  
+      "value": "[parameters('adminUsername')]"  
+    },  
+    "postgresAdminPassword": {  
+      "type": "string",  
+      "value": "[parameters('adminPassword')]"  
+    },  
+    "resourceId": {  
+      "type": "string",  
+      "value": "[resourceId('Microsoft.Communication/CommunicationServices', parameters('acsName'))]"  
+    },  
+    "resourceName": {  
+      "type": "string",  
+      "value": "[parameters('acsName')]"  
+    }  
+  }  
+}  
