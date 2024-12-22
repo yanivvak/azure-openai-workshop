@@ -8,4 +8,5 @@ pandas>=2.2.1
 azure-search-documents==11.6.0b1
 azure-storage-blob
 azure-identity
+azure-ai-inference
 
