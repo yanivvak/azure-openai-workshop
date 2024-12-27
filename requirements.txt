@@ -10,4 +10,5 @@ azure-storage-blob
 azure-identity
 azure-ai-inference
 azure-ai-projects
+azure-cognitiveservices-speech
 
