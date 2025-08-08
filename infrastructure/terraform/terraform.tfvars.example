@@ -1,0 +1,27 @@
+# Example terraform.tfvars file
+# Copy this file to terraform.tfvars and customize the values
+
+# Resource Group Configuration
+# resource_group_name = "rg-foundry-myproject"
+location = "East US 2"
+environment = "dev"
+
+# AI Foundry Configuration
+# ai_foundry_name = "foundry-myproject"
+# ai_project_name = "foundry-myproject-proj"
+sku_name = "S0"
+
+# Security Configuration
+disable_local_auth = true
+public_network_access_enabled = true
+
+# Model Deployment
+deploy_model = true
+model_capacity = 1
+
+# Additional Tags
+additional_tags = {
+  "CostCenter" = "Engineering"
+  "Owner"      = "DataScience Team"
+  "Purpose"    = "AI Development"
+}
