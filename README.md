@@ -83,21 +83,49 @@ The deployment creates:
 
 ### Step 4: Configure Environment Variables
 
+After successful infrastructure deployment, configure your environment variables:
+
 1. **Copy the environment template**:
    ```bash
-   cp .env.sample .env
+   cp .env.example .env
    ```
 
-2. **Update the `.env` file** with your Azure resource details from the infrastructure deployment outputs:
-   - `AZURE_AI_FOUNDRY_ENDPOINT`
-   - `PROJECT_ENDPOINT`
-   - `AZURE_AI_FOUNDRY_RESOURCE_NAME`
-   - `AZURE_AI_FOUNDRY_PROJECT_NAME`
-   - `AZURE_RESOURCE_GROUP_NAME`
-   - `AZURE_SUBSCRIPTION_ID`
+2. **Update the minimum required variables** in `.env` file using the deployment outputs:
 
-3. **Configure authentication method**:
-   - **Recommended**: Use Entra ID authentication (set `OPENAI_API_TYPE=azure_ad`)
+   **Required Variables:**
+   ```bash
+   # From deployment output: aiFoundryEndpoint
+   AZURE_OPENAI_ENDPOINT=https://your-foundry-resource.cognitiveservices.azure.com/
+   
+   # From deployment output: modelDeploymentName  
+   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
+   
+   # API version for Azure OpenAI
+   AZURE_OPENAI_API_VERSION=2024-10-21
+   ```
+
+3. **Choose authentication method**:
+   
+   **Option A: Entra ID Authentication (Recommended)**
+   - No additional configuration needed
+   - Uses your Azure CLI login (`az login`)
+   - Most secure for development
+   
+   **Option B: API Key Authentication**
+   - Get API key from Azure Portal → Your AI Foundry resource → Keys and Endpoint
+   - Add to `.env` file:
+   ```bash
+   AZURE_OPENAI_API_KEY=your-api-key-here
+   ```
+
+4. **Optional: Add additional variables** for advanced features:
+   ```bash
+   # For AI Foundry SDK features
+   PROJECT_ENDPOINT=https://your-foundry-resource.services.ai.azure.com/api/projects/your-project-name
+   AZURE_AI_FOUNDRY_RESOURCE_NAME=your-foundry-resource
+   AZURE_AI_FOUNDRY_PROJECT_NAME=your-project-name
+   AZURE_RESOURCE_GROUP_NAME=your-resource-group
+   ```
    - **Alternative**: Use API key authentication (set `AZURE_AI_FOUNDRY_API_KEY`)
 
 ### Step 5: Start the Workshop
@@ -144,8 +172,25 @@ This checks:
 |-------|----------|
 | **Authentication errors** | Run `az login` and verify subscription access |
 | **Module import errors** | Run `uv sync` or reinstall dependencies |
+| **Environment variable errors** | Ensure minimum required variables are set: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION` |
+| **API key issues** | Get API key from Azure Portal → Your AI Foundry resource → Keys and Endpoint |
 | **Quota exceeded** | Request quota increase or change Azure region |
 | **Model deployment fails** | Ensure S0 SKU and region supports GPT-4o |
+| **Bicep deployment validation errors** | Ensure using latest Bicep version (`az bicep upgrade`) |
+
+### Quick Environment Setup Check
+
+If you're getting authentication or connection errors, verify these minimum environment variables are set:
+
+```bash
+# Check current values
+echo "AZURE_OPENAI_ENDPOINT: $AZURE_OPENAI_ENDPOINT"
+echo "AZURE_OPENAI_DEPLOYMENT_NAME: $AZURE_OPENAI_DEPLOYMENT_NAME" 
+echo "AZURE_OPENAI_API_VERSION: $AZURE_OPENAI_API_VERSION"
+
+# If using API key authentication
+echo "AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:0:10}..." # Shows first 10 chars only
+```
 
 ## 🔧 Development & Customization
 
@@ -157,16 +202,21 @@ uv add package-name
 
 # Add development tools
 uv add --group dev package-name
-
-# Add tracing packages
-uv add --group tracing package-name
 ```
+
+### Included Dependencies
+
+All workshop dependencies are included by default when you run `uv sync`:
+
+- **Core Azure AI**: `azure-ai-projects[agents]`, `azure-ai-inference`, `azure-identity`
+- **OpenAI SDK**: `openai` with Azure OpenAI support
+- **Tracing & Observability**: `opentelemetry-*`, `azure-monitor-opentelemetry`
+- **Data Analysis**: `pandas`, `numpy`, `matplotlib`
+- **Jupyter**: `jupyter`, `ipykernel`
 
 ### Optional Dependency Groups
 
 - **Development**: `uv sync --group dev` (pytest, black, mypy)
-- **Tracing**: `uv sync --group tracing` (OpenTelemetry, Azure Monitor)
-- **Agents**: `uv sync --group agents` (Semantic Kernel, AutoGen)
 
 ## 📖 Additional Resources
 

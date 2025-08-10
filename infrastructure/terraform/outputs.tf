@@ -53,6 +53,39 @@ output "model_deployment_id" {
   value       = var.deploy_model ? azurerm_cognitive_deployment.gpt4o_deployment[0].id : "No model deployed"
 }
 
+# Application Insights Outputs
+output "application_insights_name" {
+  description = "Name of the Application Insights resource"
+  value       = azurerm_application_insights.foundry_insights.name
+}
+
+output "application_insights_id" {
+  description = "ID of the Application Insights resource"
+  value       = azurerm_application_insights.foundry_insights.id
+}
+
+output "application_insights_instrumentation_key" {
+  description = "Application Insights instrumentation key"
+  value       = azurerm_application_insights.foundry_insights.instrumentation_key
+  sensitive   = true
+}
+
+output "application_insights_connection_string" {
+  description = "Application Insights connection string for tracing"
+  value       = azurerm_application_insights.foundry_insights.connection_string
+  sensitive   = true
+}
+
+output "log_analytics_workspace_name" {
+  description = "Name of the Log Analytics workspace"
+  value       = azurerm_log_analytics_workspace.foundry_workspace.name
+}
+
+output "log_analytics_workspace_id" {
+  description = "ID of the Log Analytics workspace"
+  value       = azurerm_log_analytics_workspace.foundry_workspace.id
+}
+
 # Connection Information
 output "connection_info" {
   description = "Connection information for accessing the AI Foundry"
@@ -65,6 +98,9 @@ output "connection_info" {
     model_deployed    = var.deploy_model
     model_name        = var.deploy_model ? "gpt-4o" : "none"
     project_endpoint  = "https://${azurerm_cognitive_account.ai_foundry.name}.services.ai.azure.com/api/projects/${azurerm_cognitive_account.ai_foundry.name}-project"
+    project_connection_string = "SubscriptionId=${data.azurerm_client_config.current.subscription_id};ResourceGroupName=${azurerm_resource_group.foundry_rg.name};ProjectName=${azurerm_cognitive_account.ai_foundry.name}-project"
+    application_insights_name = azurerm_application_insights.foundry_insights.name
+    application_insights_connection_string = azurerm_application_insights.foundry_insights.connection_string
   }
 }
 
@@ -79,4 +115,10 @@ output "portal_urls" {
     resource_group_portal = "https://portal.azure.com/#@/resource/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.foundry_rg.name}/overview"
     ai_foundry_resource_portal = "https://portal.azure.com/#@/resource${azurerm_cognitive_account.ai_foundry.id}/overview"
   }
+}
+
+# Project Connection String
+output "project_connection_string" {
+  description = "Project connection string for Azure AI Foundry SDK"
+  value = "SubscriptionId=${data.azurerm_client_config.current.subscription_id};ResourceGroupName=${azurerm_resource_group.foundry_rg.name};ProjectName=${azurerm_cognitive_account.ai_foundry.name}-project"
 }

@@ -61,3 +61,11 @@ output aiProjectEndpoint string = foundryResources.outputs.aiProjectEndpoint
 output modelDeploymentName string = foundryResources.outputs.modelDeploymentName
 output subscriptionId string = foundryResources.outputs.subscriptionId
 output location string = location
+
+// Application Insights outputs
+output applicationInsightsName string = foundryResources.outputs.applicationInsightsName
+output applicationInsightsConnectionString string = foundryResources.outputs.applicationInsightsConnectionString
+output logAnalyticsWorkspaceName string = foundryResources.outputs.logAnalyticsWorkspaceName
+
+// Project Connection String
+output projectConnectionString string = foundryResources.outputs.projectConnectionString

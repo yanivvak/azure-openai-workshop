@@ -83,6 +83,49 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
   }
 }
 
+// Application Insights for observability and tracing
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${aiFoundryName}-insights'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+    IngestionMode: 'LogAnalytics'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+  tags: {
+    purpose: 'AI Foundry Observability'
+    environment: 'development'
+  }
+}
+
+// Log Analytics Workspace for Application Insights
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: '${aiFoundryName}-workspace'
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+    features: {
+      enableLogAccessUsingOnlyResourcePermissions: true
+    }
+    workspaceCapping: {
+      dailyQuotaGb: 1
+    }
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+  tags: {
+    purpose: 'AI Foundry Logging'
+    environment: 'development'
+  }
+}
+
 // Outputs
 output aiFoundryName string = aiFoundry.name
 output aiFoundryId string = aiFoundry.id
@@ -97,3 +140,14 @@ output modelDeploymentName string = deployModel ? modelDeployment.name : ''
 output resourceGroupName string = resourceGroup().name
 output subscriptionId string = subscription().subscriptionId
 output location string = location
+
+// Application Insights outputs
+output applicationInsightsName string = applicationInsights.name
+output applicationInsightsId string = applicationInsights.id
+output applicationInsightsInstrumentationKey string = applicationInsights.properties.InstrumentationKey
+output applicationInsightsConnectionString string = applicationInsights.properties.ConnectionString
+output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
+output logAnalyticsWorkspaceId string = logAnalyticsWorkspace.id
+
+// Project Connection String - format for Azure AI Foundry SDK
+output projectConnectionString string = 'SubscriptionId=${subscription().subscriptionId};ResourceGroupName=${resourceGroup().name};ProjectName=${aiProjectName}'

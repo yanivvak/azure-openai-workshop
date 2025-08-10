@@ -1,3 +1,46 @@
+# Environment variables and secrets
 .env
+.env.local
+.env.production
+.env.development
+
+# Python virtual environments
 .venv
-workshop
+venv/
+workshop/
+.virtualenv
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Azure/deployment specific
+azure-deployment-outputs.json
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/

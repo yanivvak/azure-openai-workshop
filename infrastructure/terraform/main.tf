@@ -100,3 +100,36 @@ resource "azurerm_cognitive_deployment" "gpt4o_deployment" {
     ]
   }
 }
+
+# Log Analytics Workspace for Application Insights
+resource "azurerm_log_analytics_workspace" "foundry_workspace" {
+  name                = "${azurerm_cognitive_account.ai_foundry.name}-workspace"
+  location            = azurerm_resource_group.foundry_rg.location
+  resource_group_name = azurerm_resource_group.foundry_rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+  daily_quota_gb      = 1
+
+  tags = {
+    Environment = var.environment
+    Project     = "Azure Foundry"
+    Purpose     = "AI Foundry Logging"
+    CreatedBy   = "Terraform"
+  }
+}
+
+# Application Insights for observability and tracing
+resource "azurerm_application_insights" "foundry_insights" {
+  name                = "${azurerm_cognitive_account.ai_foundry.name}-insights"
+  location            = azurerm_resource_group.foundry_rg.location
+  resource_group_name = azurerm_resource_group.foundry_rg.name
+  workspace_id        = azurerm_log_analytics_workspace.foundry_workspace.id
+  application_type    = "web"
+
+  tags = {
+    Environment = var.environment
+    Project     = "Azure Foundry"
+    Purpose     = "AI Foundry Observability"
+    CreatedBy   = "Terraform"
+  }
+}
