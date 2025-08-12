@@ -111,10 +111,18 @@ if [ $? -eq 0 ]; then
     terraform output
     
     echo ""
+    echo -e "${GREEN}📝 Environment Variables for .env file:${NC}"
+    echo "Copy these values to your .env file:"
+    echo "----------------------------------------"
+    terraform output -raw env_variables
+    echo "----------------------------------------"
+    
+    echo ""
     echo -e "${GREEN}🌐 Next Steps:${NC}"
     echo "1. Visit the Azure AI Foundry portal: https://ai.azure.com"
     echo "2. Find your resource in the Azure portal"
-    echo "3. Start building your AI applications!"
+    echo "3. Copy the environment variables above to your .env file"
+    echo "4. Start building your AI applications!"
     
     echo ""
     echo -e "${YELLOW}🔑 Access Keys (if needed):${NC}"

@@ -126,10 +126,10 @@ resource "azapi_resource" "ai_foundry_project" {
   ]
 }
 
-# Optional: Create a GPT-4.1 model deployment
+# Optional: Create a GPT-4.1-mini model deployment
 resource "azurerm_cognitive_deployment" "gpt41_deployment" {
   count                = var.deploy_model ? 1 : 0
-  name                 = "gpt-4.1"
+  name                 = "gpt-4.1-mini"
   cognitive_account_id = azapi_resource.ai_foundry.id
 
   depends_on = [
@@ -138,7 +138,7 @@ resource "azurerm_cognitive_deployment" "gpt41_deployment" {
 
   model {
     format  = "OpenAI"
-    name    = "gpt-4.1"
+    name    = "gpt-4.1-mini"
     version = "2025-04-14"
   }
 

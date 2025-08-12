@@ -87,7 +87,7 @@ cd infrastructure/terraform
 The deployment creates:
 - Azure AI Foundry resource
 - AI Foundry project
-- GPT-4.1 model deployment
+- GPT-4.1-mini model deployment
 - Required permissions and security settings
 
 ### Step 4: Configure Environment Variables
@@ -107,7 +107,7 @@ After successful infrastructure deployment, configure your environment variables
    AZURE_OPENAI_ENDPOINT=https://your-foundry-resource.cognitiveservices.azure.com/
    
    # From deployment output: modelDeploymentName  
-   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4.1
+   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4.1-mini
    
    # API version for Azure OpenAI
    AZURE_OPENAI_API_VERSION=2024-10-21
@@ -170,7 +170,7 @@ This checks:
 | **Environment variable errors** | Ensure minimum required variables are set: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION` |
 | **API key issues** | Get API key from Azure Portal → Your AI Foundry resource → Keys and Endpoint |
 | **Quota exceeded** | Request quota increase or change Azure region |
-| **Model deployment fails** | Ensure S0 SKU and region supports GPT-4.1 |
+| **Model deployment fails** | Ensure S0 SKU and region supports GPT-4.1-mini |
 | **Bicep deployment validation errors** | Ensure using latest Bicep version (`az bicep upgrade`) |
 
 ### Quick Environment Setup Check

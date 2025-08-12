@@ -65,7 +65,7 @@ All variables have sensible defaults and are optional.
 | `environment` | string | `"dev"` | Environment (dev/test/staging/prod) |
 | `ai_foundry_name` | string | `""` (auto-generated) | AI Foundry resource name |
 | `sku_name` | string | `"S0"` | SKU (F0 for free, S0 for standard) |
-| `deploy_model` | bool | `true` | Deploy GPT-4.1 model |
+| `deploy_model` | bool | `true` | Deploy GPT-4.1-mini model |
 | `disable_local_auth` | bool | `true` | Disable local auth (recommended) |
 
 ### Example deployment with custom values

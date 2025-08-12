@@ -141,3 +141,18 @@ output "workshop_config" {
   }
   sensitive = true
 }
+
+# Environment variables output in .env format
+output "env_variables" {
+  description = "Environment variables formatted for .env file"
+  value = <<-EOT
+AZURE_OPENAI_ENDPOINT=${azapi_resource.ai_foundry.output.properties.endpoint}
+AZURE_OPENAI_DEPLOYMENT_NAME=${var.deploy_model ? "gpt-4.1-mini" : "gpt-4.1-mini"}
+AZURE_OPENAI_API_VERSION=2024-10-21
+
+PROJECT_CONNECTION_STRING=SubscriptionId=${data.azurerm_client_config.current.subscription_id};ResourceGroupName=${azurerm_resource_group.foundry_rg.name};ProjectName=${azapi_resource.ai_foundry_project.name}
+APPLICATION_INSIGHTS_CONNECTION_STRING=${azurerm_application_insights.foundry_insights.connection_string}
+PROJECT_ENDPOINT=https://${azapi_resource.ai_foundry.name}.services.ai.azure.com/api/projects/${azapi_resource.ai_foundry_project.name}
+EOT
+  sensitive = true
+}
