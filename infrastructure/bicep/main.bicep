@@ -23,7 +23,7 @@ param sku string = 'S0'
 @description('Enable local authentication (set to false for production)')
 param disableLocalAuth bool = false
 
-@description('Deploy a GPT-4o model deployment')
+@description('Deploy a GPT-4.1 model deployment')
 param deployModel bool = true
 
 // Create Resource Group

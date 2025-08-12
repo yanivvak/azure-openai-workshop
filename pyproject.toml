@@ -9,6 +9,7 @@ dependencies = [
     "openai>=1.58.1",
     "azure-ai-projects>=1.0.0b1", # Includes agents functionality for Workshop 3
     "azure-ai-inference>=1.0.0b1",
+    "azure-ai-evaluation>=1.0.1", # For agent evaluators (Intent Resolution, Tool Call Accuracy, Task Adherence)
     "azure-identity>=1.15.0",
     "azure-cognitiveservices-speech>=1.37.0",
     # Data manipulation and analysis

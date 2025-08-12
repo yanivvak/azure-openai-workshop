@@ -60,7 +60,7 @@ echo "  Resource Group: ${RESOURCE_GROUP_NAME}"
 echo "  AI Foundry Name: ${AI_FOUNDRY_NAME}"
 echo ""
 
-read -p "Deploy GPT-4o model? (y/n) [y]: " DEPLOY_MODEL
+read -p "Deploy GPT-4.1 model? (y/n) [y]: " DEPLOY_MODEL
 DEPLOY_MODEL=${DEPLOY_MODEL:-y}
 if [[ $DEPLOY_MODEL =~ ^[Yy]$ ]]; then
     DEPLOY_MODEL_PARAM="true"

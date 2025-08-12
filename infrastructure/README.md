@@ -48,7 +48,7 @@ Both templates deploy the following Azure resources:
 - **AI Foundry Project** - Development workspace for AI applications
 
 ### Optional Resources
-- **GPT-4o Model Deployment** - Ready-to-use language model (enabled by default)
+- **GPT-4.1 Model Deployment** - Ready-to-use language model (enabled by default)
 
 ## 🔧 Prerequisites
 
@@ -73,7 +73,7 @@ Both templates deploy the following Azure resources:
 | Location | Azure region | East US 2 | Choose region with AI services availability |
 | Environment | Deployment environment | dev | dev/test/staging/prod |
 | SKU | Service tier | S0 | F0 (free) or S0 (standard) |
-| Deploy Model | Include GPT-4o deployment | true | Requires standard SKU |
+| Deploy Model | Include GPT-4.1 deployment | true | Requires standard SKU |
 | Disable Local Auth | Enhanced security | true | Recommended for production |
 
 ## 🎯 Choosing Between Bicep and Terraform

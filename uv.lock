@@ -306,6 +306,29 @@ wheels = [
 ]
 
 [[package]]
+name = "azure-ai-evaluation"
+version = "1.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "azure-core" },
+    { name = "azure-identity" },
+    { name = "azure-storage-blob" },
+    { name = "httpx" },
+    { name = "jinja2" },
+    { name = "msrest" },
+    { name = "nltk" },
+    { name = "openai" },
+    { name = "pandas" },
+    { name = "pyjwt" },
+    { name = "ruamel-yaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f5/6e/018e0bc3d7368fc6379373939d3ef29da75755e998545e67c660ad8efadd/azure_ai_evaluation-1.10.0.tar.gz", hash = "sha256:58bdf2d2be9e2b94a881026b006104f64654bbe61dc101bff84c2d9fa8c575a2", size = 1058944, upload-time = "2025-07-31T23:46:31.021Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d6/38/a0ed945934833c0b3a679611351be0f1e7c8667af92a58a43da2ece512e5/azure_ai_evaluation-1.10.0-py3-none-any.whl", hash = "sha256:05bf98b29d8d0218180725d0db41f5a4d8fd394eceaacb87c79f9bca503206a9", size = 1000093, upload-time = "2025-07-31T23:46:32.97Z" },
+]
+
+[[package]]
 name = "azure-ai-inference"
 version = "1.0.0b9"
 source = { registry = "https://pypi.org/simple" }
@@ -451,6 +474,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "azure-ai-agents" },
+    { name = "azure-ai-evaluation" },
     { name = "azure-ai-inference" },
     { name = "azure-ai-projects" },
     { name = "azure-cognitiveservices-speech" },
@@ -499,6 +523,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "azure-ai-agents", specifier = ">=1.1.0" },
+    { name = "azure-ai-evaluation", specifier = ">=1.0.1" },
     { name = "azure-ai-inference", specifier = ">=1.0.0b1" },
     { name = "azure-ai-projects", specifier = ">=1.0.0b1" },
     { name = "azure-cognitiveservices-speech", specifier = ">=1.37.0" },
@@ -1415,6 +1440,15 @@ wheels = [
 ]
 
 [[package]]
+name = "joblib"
+version = "1.5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/fe/0f5a938c54105553436dbff7a61dc4fed4b1b2c98852f8833beaf4d5968f/joblib-1.5.1.tar.gz", hash = "sha256:f4f86e351f39fe3d0d32a9f2c3d8af1ee4cec285aafcb27003dda5205576b444", size = 330475, upload-time = "2025-05-23T12:04:37.097Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7d/4f/1195bbac8e0c2acc5f740661631d8d750dc38d4a32b23ee5df3cde6f4e0d/joblib-1.5.1-py3-none-any.whl", hash = "sha256:4719a31f054c7d766948dcd83e9613686b27114f190f717cec7eaa2084f8a74a", size = 307746, upload-time = "2025-05-23T12:04:35.124Z" },
+]
+
+[[package]]
 name = "json5"
 version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2158,6 +2192,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/83/f8/51569ac65d696c8ecbee95938f89d4abf00f47d58d48f6fbabfe8f0baefe/nest_asyncio-1.6.0.tar.gz", hash = "sha256:6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe", size = 7418, upload-time = "2024-01-21T14:25:19.227Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/c4/c2971a3ba4c6103a3d10c4b0f24f461ddc027f0f09763220cf35ca1401b3/nest_asyncio-1.6.0-py3-none-any.whl", hash = "sha256:87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c", size = 5195, upload-time = "2024-01-21T14:25:17.223Z" },
+]
+
+[[package]]
+name = "nltk"
+version = "3.9.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "joblib" },
+    { name = "regex" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3c/87/db8be88ad32c2d042420b6fd9ffd4a149f9a0d7f0e86b3f543be2eeeedd2/nltk-3.9.1.tar.gz", hash = "sha256:87d127bd3de4bd89a4f81265e5fa59cb1b199b27440175370f7417d2bc7ae868", size = 2904691, upload-time = "2024-08-18T19:48:37.769Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4d/66/7d9e26593edda06e8cb531874633f7c2372279c3b0f46235539fe546df8b/nltk-3.9.1-py3-none-any.whl", hash = "sha256:4fa26829c5b00715afe3061398a8989dc643b92ce7dd93fb4585a70930d168a1", size = 1505442, upload-time = "2024-08-18T19:48:21.909Z" },
 ]
 
 [[package]]

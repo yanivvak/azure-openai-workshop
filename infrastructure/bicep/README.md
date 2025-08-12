@@ -68,7 +68,7 @@ az deployment sub create \
 | `aiProjectName` | string | `{aiFoundryName}-project` | Name of the AI Foundry project |
 | `sku` | string | `S0` | SKU for AI Foundry (S0 or F0) |
 | `disableLocalAuth` | bool | `true` | Disable local authentication |
-| `deployModel` | bool | `true` | Deploy GPT-4o model |
+| `deployModel` | bool | `true` | Deploy GPT-4.1 model |
 
 ## Outputs
 

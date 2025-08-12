@@ -45,6 +45,24 @@ variable "ai_project_name" {
   default     = ""
 }
 
+# Project-specific variables
+variable "project_name" {
+  description = "Name of the AI Foundry project resource"
+  type        = string
+  default     = ""
+  
+  validation {
+    condition     = var.project_name == "" || can(regex("^[a-z0-9-]{3,24}$", var.project_name))
+    error_message = "Project name must be 3-24 characters long, lowercase letters, numbers, and hyphens only."
+  }
+}
+
+variable "project_display_name" {
+  description = "Display name for the AI Foundry project"
+  type        = string
+  default     = ""
+}
+
 variable "sku_name" {
   description = "SKU for the AI Foundry resource"
   type        = string
@@ -70,7 +88,7 @@ variable "public_network_access_enabled" {
 
 # Model Deployment Variables
 variable "deploy_model" {
-  description = "Deploy a GPT-4o model"
+  description = "Deploy a GPT-4.1 model"
   type        = bool
   default     = true
 }

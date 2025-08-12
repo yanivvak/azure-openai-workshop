@@ -66,10 +66,10 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-06-01' = 
   }
 }
 
-// Optional: Deploy GPT-4o model
+// Optional: Deploy GPT-4.1 model
 resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-06-01' = if (deployModel) {
   parent: aiFoundry
-  name: 'gpt-4o'
+  name: 'gpt-4.1'
   sku: {
     capacity: 1
     name: 'GlobalStandard'
@@ -77,8 +77,8 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
   properties: {
     model: {
       format: 'OpenAI'
-      name: 'gpt-4o'
-      version: '2024-05-13'
+      name: 'gpt-4.1'
+      version: '2025-04-14'
     }
   }
 }

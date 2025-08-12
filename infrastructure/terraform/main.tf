@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~>3.0"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~>2.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~>3.0"
@@ -20,7 +24,15 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+  storage_use_azuread = true
 }
+
+# Configure the AzAPI provider for Azure AI Foundry
+provider "azapi" {
+}
+
+# Current Azure configuration
+data "azurerm_client_config" "current" {}
 
 # Generate a random string for unique naming
 resource "random_string" "unique" {
@@ -42,19 +54,35 @@ resource "azurerm_resource_group" "foundry_rg" {
   }
 }
 
-# Create Azure AI Foundry (Cognitive Services Account)
-resource "azurerm_cognitive_account" "ai_foundry" {
-  name                          = var.ai_foundry_name != "" ? var.ai_foundry_name : "foundry-${random_string.unique.result}"
-  resource_group_name           = azurerm_resource_group.foundry_rg.name
-  location                      = azurerm_resource_group.foundry_rg.location
-  kind                          = "AIServices"
-  sku_name                      = var.sku_name
-  custom_subdomain_name         = var.ai_foundry_name != "" ? var.ai_foundry_name : "foundry-${random_string.unique.result}"
-  public_network_access_enabled = var.public_network_access_enabled
-  local_auth_enabled            = !var.disable_local_auth
+# Create Azure AI Foundry (using AzAPI provider as recommended by Microsoft)
+resource "azapi_resource" "ai_foundry" {
+  type                      = "Microsoft.CognitiveServices/accounts@2025-06-01"
+  name                      = var.ai_foundry_name != "" ? var.ai_foundry_name : "foundry-${random_string.unique.result}"
+  parent_id                 = azurerm_resource_group.foundry_rg.id
+  location                  = azurerm_resource_group.foundry_rg.location
+  schema_validation_enabled = false
 
-  identity {
-    type = "SystemAssigned"
+  body = {
+    kind = "AIServices"
+    sku = {
+      name = var.sku_name
+    }
+    identity = {
+      type = "SystemAssigned"
+    }
+    properties = {
+      # Support both Entra ID and API Key authentication
+      disableLocalAuth = var.disable_local_auth
+      
+      # Specifies that this is an AI Foundry resource
+      allowProjectManagement = true
+      
+      # Set custom subdomain name for DNS names created for this Foundry resource
+      customSubDomainName = var.ai_foundry_name != "" ? var.ai_foundry_name : "foundry-${random_string.unique.result}"
+      
+      # Set public network access
+      publicNetworkAccess = var.public_network_access_enabled ? "Enabled" : "Disabled"
+    }
   }
 
   tags = {
@@ -63,28 +91,55 @@ resource "azurerm_cognitive_account" "ai_foundry" {
     Purpose     = "AI Foundry Account"
     CreatedBy   = "Terraform"
   }
-
-  lifecycle {
-    ignore_changes = [
-      tags["CreatedOn"]
-    ]
-  }
 }
 
-# Create AI Foundry Project (this might require additional configuration)
-# Note: As of the current Terraform AzureRM provider version, direct project creation 
-# might not be fully supported. This may require using the AzAPI provider or Azure CLI.
+# Create AI Foundry Project
+resource "azapi_resource" "ai_foundry_project" {
+  type                      = "Microsoft.CognitiveServices/accounts/projects@2025-06-01"
+  name                      = var.project_name != "" ? var.project_name : "${azapi_resource.ai_foundry.name}-project"
+  parent_id                 = azapi_resource.ai_foundry.id
+  location                  = azurerm_resource_group.foundry_rg.location
+  schema_validation_enabled = false
 
-# Optional: Create a GPT-4o model deployment
-resource "azurerm_cognitive_deployment" "gpt4o_deployment" {
+  body = {
+    sku = {
+      name = var.sku_name
+    }
+    identity = {
+      type = "SystemAssigned"
+    }
+    properties = {
+      displayName = var.project_display_name != "" ? var.project_display_name : "AI Foundry Project"
+      description = "Azure AI Foundry project for workshop"
+    }
+  }
+
+  tags = {
+    Environment = var.environment
+    Project     = "Azure Foundry"
+    Purpose     = "AI Foundry Project"
+    CreatedBy   = "Terraform"
+  }
+
+  depends_on = [
+    azapi_resource.ai_foundry
+  ]
+}
+
+# Optional: Create a GPT-4.1 model deployment
+resource "azurerm_cognitive_deployment" "gpt41_deployment" {
   count                = var.deploy_model ? 1 : 0
-  name                 = "gpt-4o"
-  cognitive_account_id = azurerm_cognitive_account.ai_foundry.id
+  name                 = "gpt-4.1"
+  cognitive_account_id = azapi_resource.ai_foundry.id
+
+  depends_on = [
+    azapi_resource.ai_foundry
+  ]
 
   model {
     format  = "OpenAI"
-    name    = "gpt-4o"
-    version = "2024-08-06"
+    name    = "gpt-4.1"
+    version = "2025-04-14"
   }
 
   scale {
@@ -103,7 +158,7 @@ resource "azurerm_cognitive_deployment" "gpt4o_deployment" {
 
 # Log Analytics Workspace for Application Insights
 resource "azurerm_log_analytics_workspace" "foundry_workspace" {
-  name                = "${azurerm_cognitive_account.ai_foundry.name}-workspace"
+  name                = "${azapi_resource.ai_foundry.name}-workspace"
   location            = azurerm_resource_group.foundry_rg.location
   resource_group_name = azurerm_resource_group.foundry_rg.name
   sku                 = "PerGB2018"
@@ -120,7 +175,7 @@ resource "azurerm_log_analytics_workspace" "foundry_workspace" {
 
 # Application Insights for observability and tracing
 resource "azurerm_application_insights" "foundry_insights" {
-  name                = "${azurerm_cognitive_account.ai_foundry.name}-insights"
+  name                = "${azapi_resource.ai_foundry.name}-insights"
   location            = azurerm_resource_group.foundry_rg.location
   resource_group_name = azurerm_resource_group.foundry_rg.name
   workspace_id        = azurerm_log_analytics_workspace.foundry_workspace.id

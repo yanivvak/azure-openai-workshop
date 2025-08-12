@@ -8,7 +8,41 @@ A comprehensive workshop for building AI applications with Azure AI Foundry. Thi
 
 - **Azure Account** - Get an Azure account for [free](https://aka.ms/free) with some free Azure credits to get started
 - **Azure subscription with access enabled for the Azure OpenAI Service** - See the [Azure OpenAI Service documentation](https://learn.microsoft.com/azure/ai-services/openai/overview#how-do-i-get-access-to-azure-openai) for access details
+- **Azure CLI** - Required for authentication and infrastructure deployment
 - **Python 3.12+** - Required for the workshop environment
+
+#### Install Azure CLI
+
+**macOS:**
+```bash
+brew install azure-cli
+```
+
+**Windows:**
+```bash
+winget install Microsoft.AzureCLI
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+```
+
+**Other platforms:** See [Azure CLI installation guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+
+#### Authenticate with Azure
+
+After installing Azure CLI, authenticate with your Azure account:
+
+```bash
+az login
+```
+
+This will open a browser window for authentication. Once completed, verify your subscription:
+
+```bash
+az account show
+```
 
 ## 📋 Complete Getting Started Flow
 
@@ -38,31 +72,6 @@ cd azure-openai-workshop
    uv run python validate_setup.py
    ```
 
-**Option B: Traditional Virtual Environment**
-
-1. **Create virtual environment**:
-   ```bash
-   python -m venv workshop
-   ```
-
-2. **Activate environment**:
-   ```bash
-   # On macOS/Linux:
-   source workshop/bin/activate
-   
-   # On Windows:
-   workshop\Scripts\activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r legacy/requirements.txt
-   ```
-
-### Step 3: Deploy Azure Infrastructure
-
-Choose your preferred Infrastructure as Code tool:
-
 **Option A: Bicep (Azure-native)**
 ```bash
 cd infrastructure/bicep
@@ -78,7 +87,7 @@ cd infrastructure/terraform
 The deployment creates:
 - Azure AI Foundry resource
 - AI Foundry project
-- GPT-4o model deployment
+- GPT-4.1 model deployment
 - Required permissions and security settings
 
 ### Step 4: Configure Environment Variables
@@ -90,7 +99,7 @@ After successful infrastructure deployment, configure your environment variables
    cp .env.example .env
    ```
 
-2. **Update the minimum required variables** in `.env` file using the deployment outputs:
+2. **Update the required variables** in `.env` file using the deployment outputs:
 
    **Required Variables:**
    ```bash
@@ -98,7 +107,7 @@ After successful infrastructure deployment, configure your environment variables
    AZURE_OPENAI_ENDPOINT=https://your-foundry-resource.cognitiveservices.azure.com/
    
    # From deployment output: modelDeploymentName  
-   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
+   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4.1
    
    # API version for Azure OpenAI
    AZURE_OPENAI_API_VERSION=2024-10-21
@@ -122,26 +131,10 @@ After successful infrastructure deployment, configure your environment variables
    ```bash
    # For AI Foundry SDK features
    PROJECT_ENDPOINT=https://your-foundry-resource.services.ai.azure.com/api/projects/your-project-name
-   AZURE_AI_FOUNDRY_RESOURCE_NAME=your-foundry-resource
-   AZURE_AI_FOUNDRY_PROJECT_NAME=your-project-name
-   AZURE_RESOURCE_GROUP_NAME=your-resource-group
    ```
    - **Alternative**: Use API key authentication (set `AZURE_AI_FOUNDRY_API_KEY`)
 
 ### Step 5: Start the Workshop
-
-1. **Launch Jupyter Lab**:
-   ```bash
-   # With uv:
-   uv run jupyter lab
-   
-   # With traditional environment:
-   jupyter lab
-   ```
-
-2. **Begin with the first notebook**:
-   - Open `01-deploy-first-model.ipynb`
-   - Follow the step-by-step instructions
 
 ## 📚 Workshop Structure
 
@@ -170,12 +163,14 @@ This checks:
 
 | Issue | Solution |
 |-------|----------|
-| **Authentication errors** | Run `az login` and verify subscription access |
+| **Authentication errors** | Run `az login` to authenticate with Azure, then verify with `az account show` |
+| **Azure CLI not found** | Install Azure CLI using instructions above, then run `az login` |
+| **Wrong subscription** | Run `az account set --subscription "Your Subscription Name"` |
 | **Module import errors** | Run `uv sync` or reinstall dependencies |
 | **Environment variable errors** | Ensure minimum required variables are set: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION` |
 | **API key issues** | Get API key from Azure Portal → Your AI Foundry resource → Keys and Endpoint |
 | **Quota exceeded** | Request quota increase or change Azure region |
-| **Model deployment fails** | Ensure S0 SKU and region supports GPT-4o |
+| **Model deployment fails** | Ensure S0 SKU and region supports GPT-4.1 |
 | **Bicep deployment validation errors** | Ensure using latest Bicep version (`az bicep upgrade`) |
 
 ### Quick Environment Setup Check
