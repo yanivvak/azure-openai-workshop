@@ -8,7 +8,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Location for all resources"
   type        = string
-  default     = "East US 2"
+  default     = "Sweden Central"
   
   validation {
     condition = can(regex("^[A-Za-z0-9 ]+$", var.location))
@@ -94,13 +94,13 @@ variable "deploy_model" {
 }
 
 variable "model_capacity" {
-  description = "Capacity for the model deployment"
+  description = "Capacity for the model deployment (in thousands of TPM). Default 100 = 100K TPM for GPT-4.1 mini"
   type        = number
-  default     = 1
+  default     = 100
   
   validation {
-    condition     = var.model_capacity >= 1 && var.model_capacity <= 100
-    error_message = "Model capacity must be between 1 and 100."
+    condition     = var.model_capacity >= 1 && var.model_capacity <= 1000
+    error_message = "Model capacity must be between 1 and 1000 (representing 1K to 1M TPM)."
   }
 }
 

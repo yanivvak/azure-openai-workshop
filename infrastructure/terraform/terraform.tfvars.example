@@ -3,7 +3,7 @@
 
 # Resource Group Configuration
 # resource_group_name = "rg-foundry-myproject"
-location = "East US 2"
+location = "Sweden Central"
 environment = "dev"
 
 # AI Foundry Configuration
@@ -17,7 +17,7 @@ public_network_access_enabled = true
 
 # Model Deployment
 deploy_model = true
-model_capacity = 1
+model_capacity = 100  # 100K TPM for better evaluation performance
 
 # Additional Tags
 additional_tags = {
