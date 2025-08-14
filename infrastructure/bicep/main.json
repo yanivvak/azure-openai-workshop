@@ -1,0 +1,593 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.37.4.10188",
+      "templateHash": "17882655833119656695"
+    }
+  },
+  "parameters": {
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name of the resource group"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "Sweden Central",
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "defaultValue": "dev",
+      "allowedValues": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
+      ],
+      "metadata": {
+        "description": "Environment name (dev, test, prod)"
+      }
+    },
+    "aiFoundryName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name of the AI Foundry resource"
+      }
+    },
+    "projectName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name of the AI Foundry project resource"
+      }
+    },
+    "projectDisplayName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Display name for the AI Foundry project"
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "S0",
+      "allowedValues": [
+        "S0",
+        "F0"
+      ],
+      "metadata": {
+        "description": "SKU for the AI Foundry resource"
+      }
+    },
+    "disableLocalAuth": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Disable local authentication (recommended for production)"
+      }
+    },
+    "publicNetworkAccessEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable public network access"
+      }
+    },
+    "deployModel": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy a GPT-4.1 model deployment"
+      }
+    },
+    "modelCapacity": {
+      "type": "int",
+      "defaultValue": 100,
+      "minValue": 1,
+      "maxValue": 1000,
+      "metadata": {
+        "description": "Capacity for the model deployment (in thousands of TPM). Default 100 = 100K TPM for GPT-4.1 mini"
+      }
+    },
+    "additionalTags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Additional tags to apply to resources"
+      }
+    }
+  },
+  "variables": {
+    "uniqueSuffix": "[uniqueString(subscription().subscriptionId)]",
+    "finalResourceGroupName": "[if(not(empty(parameters('resourceGroupName'))), parameters('resourceGroupName'), format('rg-foundry-{0}', variables('uniqueSuffix')))]",
+    "finalAiFoundryName": "[if(not(empty(parameters('aiFoundryName'))), parameters('aiFoundryName'), format('foundry-{0}', variables('uniqueSuffix')))]",
+    "finalProjectName": "[if(not(empty(parameters('projectName'))), parameters('projectName'), format('{0}-project', variables('finalAiFoundryName')))]",
+    "finalProjectDisplayName": "[if(not(empty(parameters('projectDisplayName'))), parameters('projectDisplayName'), 'AI Foundry Project')]",
+    "baseTags": {
+      "Environment": "[parameters('environment')]",
+      "Project": "Azure Foundry",
+      "CreatedBy": "Bicep"
+    },
+    "allTags": "[union(variables('baseTags'), parameters('additionalTags'))]"
+  },
+  "resources": {
+    "resourceGroup": {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-11-01",
+      "name": "[variables('finalResourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('allTags')]"
+    },
+    "foundryResources": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "foundryDeployment",
+      "resourceGroup": "[variables('finalResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "aiFoundryName": {
+            "value": "[variables('finalAiFoundryName')]"
+          },
+          "aiProjectName": {
+            "value": "[variables('finalProjectName')]"
+          },
+          "projectDisplayName": {
+            "value": "[variables('finalProjectDisplayName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "skuName": {
+            "value": "[parameters('skuName')]"
+          },
+          "disableLocalAuth": {
+            "value": "[parameters('disableLocalAuth')]"
+          },
+          "publicNetworkAccessEnabled": {
+            "value": "[parameters('publicNetworkAccessEnabled')]"
+          },
+          "deployModel": {
+            "value": "[parameters('deployModel')]"
+          },
+          "modelCapacity": {
+            "value": "[parameters('modelCapacity')]"
+          },
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "additionalTags": {
+            "value": "[parameters('additionalTags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "12978952239411611430"
+            }
+          },
+          "parameters": {
+            "aiFoundryName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the AI Foundry resource"
+              }
+            },
+            "aiProjectName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the AI Foundry project"
+              }
+            },
+            "projectDisplayName": {
+              "type": "string",
+              "metadata": {
+                "description": "Display name for the AI Foundry project"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources"
+              }
+            },
+            "skuName": {
+              "type": "string",
+              "metadata": {
+                "description": "SKU for the AI Foundry resource"
+              }
+            },
+            "disableLocalAuth": {
+              "type": "bool",
+              "metadata": {
+                "description": "Disable local authentication"
+              }
+            },
+            "publicNetworkAccessEnabled": {
+              "type": "bool",
+              "metadata": {
+                "description": "Enable public network access"
+              }
+            },
+            "deployModel": {
+              "type": "bool",
+              "metadata": {
+                "description": "Deploy a model"
+              }
+            },
+            "modelCapacity": {
+              "type": "int",
+              "metadata": {
+                "description": "Capacity for the model deployment (in thousands of TPM)"
+              }
+            },
+            "environment": {
+              "type": "string",
+              "metadata": {
+                "description": "Environment name"
+              }
+            },
+            "additionalTags": {
+              "type": "object",
+              "metadata": {
+                "description": "Additional tags to apply to resources"
+              }
+            }
+          },
+          "variables": {
+            "baseTags": {
+              "Environment": "[parameters('environment')]",
+              "Project": "Azure Foundry",
+              "CreatedBy": "Bicep"
+            },
+            "allTags": "[union(variables('baseTags'), parameters('additionalTags'))]"
+          },
+          "resources": {
+            "aiFoundry": {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2025-06-01",
+              "name": "[parameters('aiFoundryName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "[parameters('skuName')]"
+              },
+              "kind": "AIServices",
+              "properties": {
+                "disableLocalAuth": "[parameters('disableLocalAuth')]",
+                "allowProjectManagement": true,
+                "customSubDomainName": "[parameters('aiFoundryName')]",
+                "publicNetworkAccess": "[if(parameters('publicNetworkAccessEnabled'), 'Enabled', 'Disabled')]"
+              },
+              "tags": "[variables('allTags')]"
+            },
+            "aiProject": {
+              "type": "Microsoft.CognitiveServices/accounts/projects",
+              "apiVersion": "2025-06-01",
+              "name": "[format('{0}/{1}', parameters('aiFoundryName'), parameters('aiProjectName'))]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "displayName": "[parameters('projectDisplayName')]",
+                "description": "Azure AI Foundry project for workshop"
+              },
+              "tags": "[variables('allTags')]",
+              "dependsOn": [
+                "aiFoundry"
+              ]
+            },
+            "modelDeployment": {
+              "condition": "[parameters('deployModel')]",
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2025-06-01",
+              "name": "[format('{0}/{1}', parameters('aiFoundryName'), 'gpt-4.1-mini')]",
+              "sku": {
+                "capacity": "[parameters('modelCapacity')]",
+                "name": "GlobalStandard"
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "gpt-4.1-mini",
+                  "version": "2025-04-14"
+                },
+                "raiPolicyName": "Microsoft.Default"
+              },
+              "dependsOn": [
+                "aiFoundry"
+              ]
+            },
+            "logAnalyticsWorkspace": {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2023-09-01",
+              "name": "[format('{0}-workspace', parameters('aiFoundryName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "retentionInDays": 30,
+                "features": {
+                  "enableLogAccessUsingOnlyResourcePermissions": true
+                },
+                "workspaceCapping": {
+                  "dailyQuotaGb": 1
+                },
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              },
+              "tags": "[union(variables('allTags'), createObject('Purpose', 'AI Foundry Logging'))]"
+            },
+            "applicationInsights": {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[format('{0}-insights', parameters('aiFoundryName'))]",
+              "location": "[parameters('location')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', format('{0}-workspace', parameters('aiFoundryName')))]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              },
+              "tags": "[union(variables('allTags'), createObject('Purpose', 'AI Foundry Observability'))]",
+              "dependsOn": [
+                "logAnalyticsWorkspace"
+              ]
+            }
+          },
+          "outputs": {
+            "aiFoundryName": {
+              "type": "string",
+              "value": "[parameters('aiFoundryName')]"
+            },
+            "aiFoundryId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiFoundryName'))]"
+            },
+            "aiFoundryEndpoint": {
+              "type": "string",
+              "value": "[reference('aiFoundry').endpoint]"
+            },
+            "aiFoundryKey": {
+              "type": "securestring",
+              "value": "[if(parameters('disableLocalAuth'), '', listKeys('aiFoundry', '2025-06-01').key1)]"
+            },
+            "aiProjectName": {
+              "type": "string",
+              "value": "[parameters('aiProjectName')]"
+            },
+            "aiProjectId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('aiFoundryName'), parameters('aiProjectName'))]"
+            },
+            "aiProjectEndpoint": {
+              "type": "string",
+              "value": "[format('https://{0}.services.ai.azure.com/api/projects/{1}', parameters('aiFoundryName'), parameters('aiProjectName'))]"
+            },
+            "modelDeploymentName": {
+              "type": "string",
+              "value": "[if(parameters('deployModel'), 'gpt-4.1-mini', '')]"
+            },
+            "resourceGroupName": {
+              "type": "string",
+              "value": "[resourceGroup().name]"
+            },
+            "subscriptionId": {
+              "type": "string",
+              "value": "[subscription().subscriptionId]"
+            },
+            "location": {
+              "type": "string",
+              "value": "[parameters('location')]"
+            },
+            "applicationInsightsName": {
+              "type": "string",
+              "value": "[format('{0}-insights', parameters('aiFoundryName'))]"
+            },
+            "applicationInsightsId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', format('{0}-insights', parameters('aiFoundryName')))]"
+            },
+            "applicationInsightsInstrumentationKey": {
+              "type": "string",
+              "value": "[reference('applicationInsights').InstrumentationKey]"
+            },
+            "applicationInsightsConnectionString": {
+              "type": "string",
+              "value": "[reference('applicationInsights').ConnectionString]"
+            },
+            "logAnalyticsWorkspaceName": {
+              "type": "string",
+              "value": "[format('{0}-workspace', parameters('aiFoundryName'))]"
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', format('{0}-workspace', parameters('aiFoundryName')))]"
+            },
+            "projectConnectionString": {
+              "type": "string",
+              "value": "[format('SubscriptionId={0};ResourceGroupName={1};ProjectName={2}', subscription().subscriptionId, resourceGroup().name, parameters('aiProjectName'))]"
+            },
+            "modelDeploymentId": {
+              "type": "string",
+              "value": "[if(parameters('deployModel'), resourceId('Microsoft.CognitiveServices/accounts/deployments', parameters('aiFoundryName'), 'gpt-4.1-mini'), '')]"
+            },
+            "resourceGroupId": {
+              "type": "string",
+              "value": "[resourceGroup().id]"
+            },
+            "resourceGroupLocation": {
+              "type": "string",
+              "value": "[resourceGroup().location]"
+            },
+            "connectionInfo": {
+              "type": "secureObject",
+              "value": {
+                "endpoint": "[reference('aiFoundry').endpoint]",
+                "resource_name": "[parameters('aiFoundryName')]",
+                "resource_group": "[resourceGroup().name]",
+                "subscription_id": "[subscription().subscriptionId]",
+                "location": "[parameters('location')]",
+                "model_deployed": "[parameters('deployModel')]",
+                "model_name": "[if(parameters('deployModel'), 'gpt-4.1', 'none')]",
+                "project_endpoint": "[format('https://{0}.services.ai.azure.com/api/projects/{1}', parameters('aiFoundryName'), parameters('aiProjectName'))]",
+                "project_name": "[parameters('aiProjectName')]",
+                "project_connection_string": "[format('SubscriptionId={0};ResourceGroupName={1};ProjectName={2}', subscription().subscriptionId, resourceGroup().name, parameters('aiProjectName'))]",
+                "application_insights_name": "[format('{0}-insights', parameters('aiFoundryName'))]",
+                "application_insights_connection_string": "[reference('applicationInsights').ConnectionString]"
+              }
+            },
+            "portalUrls": {
+              "type": "object",
+              "value": {
+                "ai_foundry_portal": "https://ai.azure.com",
+                "resource_group_portal": "[format('https://portal.azure.com/#@/resource/subscriptions/{0}/resourceGroups/{1}/overview', subscription().subscriptionId, resourceGroup().name)]",
+                "ai_foundry_resource_portal": "[format('https://portal.azure.com/#@/resource{0}/overview', resourceId('Microsoft.CognitiveServices/accounts', parameters('aiFoundryName')))]"
+              }
+            },
+            "workshopConfig": {
+              "type": "secureObject",
+              "value": {
+                "endpoint": "[reference('aiFoundry').endpoint]",
+                "project_endpoint": "[format('https://{0}.services.ai.azure.com/api/projects/{1}', parameters('aiFoundryName'), parameters('aiProjectName'))]",
+                "project_connection_string": "[format('SubscriptionId={0};ResourceGroupName={1};ProjectName={2}', subscription().subscriptionId, resourceGroup().name, parameters('aiProjectName'))]",
+                "model_deployment_name": "[if(parameters('deployModel'), 'gpt-4.1', 'none')]",
+                "app_insights_connection_string": "[reference('applicationInsights').ConnectionString]"
+              }
+            },
+            "envVariables": {
+              "type": "securestring",
+              "value": "AZURE_OPENAI_ENDPOINT=${aiFoundry.properties.endpoint}\nAZURE_OPENAI_DEPLOYMENT_NAME=${deployModel ? 'gpt-4.1-mini' : 'gpt-4.1-mini'}\nAZURE_OPENAI_API_VERSION=2024-10-21\n\nPROJECT_CONNECTION_STRING=SubscriptionId=${subscription().subscriptionId};ResourceGroupName=${resourceGroup().name};ProjectName=${aiProjectName}\nAPPLICATION_INSIGHTS_CONNECTION_STRING=${applicationInsights.properties.ConnectionString}\nPROJECT_ENDPOINT=https://${aiFoundryName}.services.ai.azure.com/api/projects/${aiProjectName}\n"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "resourceGroup"
+      ]
+    }
+  },
+  "outputs": {
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[variables('finalResourceGroupName')]"
+    },
+    "resourceGroupId": {
+      "type": "string",
+      "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('finalResourceGroupName'))]"
+    },
+    "resourceGroupLocation": {
+      "type": "string",
+      "value": "[reference('resourceGroup', '2024-11-01', 'full').location]"
+    },
+    "aiFoundryName": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiFoundryName.value]"
+    },
+    "aiFoundryId": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiFoundryId.value]"
+    },
+    "aiFoundryEndpoint": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiFoundryEndpoint.value]"
+    },
+    "aiFoundryProjectName": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiProjectName.value]"
+    },
+    "aiFoundryProjectId": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiProjectId.value]"
+    },
+    "aiFoundryProjectEndpoint": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiProjectEndpoint.value]"
+    },
+    "modelDeploymentName": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.modelDeploymentName.value]"
+    },
+    "modelDeploymentId": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.modelDeploymentId.value]"
+    },
+    "subscriptionId": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.subscriptionId.value]"
+    },
+    "location": {
+      "type": "string",
+      "value": "[parameters('location')]"
+    },
+    "applicationInsightsName": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.applicationInsightsName.value]"
+    },
+    "applicationInsightsId": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.applicationInsightsId.value]"
+    },
+    "applicationInsightsInstrumentationKey": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.applicationInsightsInstrumentationKey.value]"
+    },
+    "applicationInsightsConnectionString": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.applicationInsightsConnectionString.value]"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.logAnalyticsWorkspaceName.value]"
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.logAnalyticsWorkspaceId.value]"
+    },
+    "projectConnectionString": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.projectConnectionString.value]"
+    },
+    "connectionInfo": {
+      "type": "secureObject",
+      "value": "[listOutputsWithSecureValues('foundryResources', '2022-09-01').connectionInfo]"
+    },
+    "portalUrls": {
+      "type": "object",
+      "value": "[reference('foundryResources').outputs.portalUrls.value]"
+    },
+    "workshopConfig": {
+      "type": "secureObject",
+      "value": "[listOutputsWithSecureValues('foundryResources', '2022-09-01').workshopConfig]"
+    },
+    "envVariables": {
+      "type": "securestring",
+      "value": "[listOutputsWithSecureValues('foundryResources', '2022-09-01').envVariables]"
+    }
+  }
+}
