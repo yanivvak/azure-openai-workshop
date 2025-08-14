@@ -7,17 +7,40 @@ param aiFoundryName string
 @description('Name of the AI Foundry project')
 param aiProjectName string
 
+@description('Display name for the AI Foundry project')
+param projectDisplayName string
+
 @description('Location for all resources')
 param location string
 
 @description('SKU for the AI Foundry resource')
-param sku string
+param skuName string
 
 @description('Disable local authentication')
 param disableLocalAuth bool
 
+@description('Enable public network access')
+param publicNetworkAccessEnabled bool
+
 @description('Deploy a model')
 param deployModel bool
+
+@description('Capacity for the model deployment (in thousands of TPM)')
+param modelCapacity int
+
+@description('Environment name')
+param environment string
+
+@description('Additional tags to apply to resources')
+param additionalTags object
+
+// Merge base tags with additional tags
+var baseTags = {
+  Environment: environment
+  Project: 'Azure Foundry'
+  CreatedBy: 'Bicep'
+}
+var allTags = union(baseTags, additionalTags)
 
 // AI Foundry Account (Cognitive Services Account with AIServices kind)
 resource aiFoundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
@@ -27,26 +50,23 @@ resource aiFoundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
     type: 'SystemAssigned'
   }
   sku: {
-    name: sku
+    name: skuName
   }
   kind: 'AIServices'
   properties: {
-    // Required to work in AI Foundry - allows project management
-    allowProjectManagement: true
-    
-    // Defines developer API endpoint subdomain
-    customSubDomainName: aiFoundryName
-    
-    // Disable local auth for better security (only if not needed for key access)
+    // Support both Entra ID and API Key authentication
     disableLocalAuth: disableLocalAuth
     
-    // Public network access
-    publicNetworkAccess: 'Enabled'
+    // Specifies that this is an AI Foundry resource
+    allowProjectManagement: true
+    
+    // Set custom subdomain name for DNS names created for this Foundry resource
+    customSubDomainName: aiFoundryName
+    
+    // Set public network access
+    publicNetworkAccess: publicNetworkAccessEnabled ? 'Enabled' : 'Disabled'
   }
-  tags: {
-    purpose: 'AI Foundry'
-    environment: 'development'
-  }
+  tags: allTags
 }
 
 // AI Foundry Project
@@ -58,12 +78,10 @@ resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-06-01' = 
     type: 'SystemAssigned'
   }
   properties: {
-    // Project-level settings
+    displayName: projectDisplayName
+    description: 'Azure AI Foundry project for workshop'
   }
-  tags: {
-    purpose: 'AI Foundry Project'
-    environment: 'development'
-  }
+  tags: allTags
 }
 
 // Optional: Deploy GPT-4.1-mini model
@@ -71,7 +89,7 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
   parent: aiFoundry
   name: 'gpt-4.1-mini'
   sku: {
-    capacity: 1
+    capacity: modelCapacity
     name: 'GlobalStandard'
   }
   properties: {
@@ -80,25 +98,7 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
       name: 'gpt-4.1-mini'
       version: '2025-04-14'
     }
-  }
-}
-
-// Application Insights for observability and tracing
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${aiFoundryName}-insights'
-  location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-    Request_Source: 'rest'
-    WorkspaceResourceId: logAnalyticsWorkspace.id
-    IngestionMode: 'LogAnalytics'
-    publicNetworkAccessForIngestion: 'Enabled'
-    publicNetworkAccessForQuery: 'Enabled'
-  }
-  tags: {
-    purpose: 'AI Foundry Observability'
-    environment: 'development'
+    raiPolicyName: 'Microsoft.Default'
   }
 }
 
@@ -120,10 +120,27 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
-  tags: {
-    purpose: 'AI Foundry Logging'
-    environment: 'development'
+  tags: union(allTags, {
+    Purpose: 'AI Foundry Logging'
+  })
+}
+
+// Application Insights for observability and tracing
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${aiFoundryName}-insights'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+    IngestionMode: 'LogAnalytics'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
   }
+  tags: union(allTags, {
+    Purpose: 'AI Foundry Observability'
+  })
 }
 
 // Outputs
@@ -151,3 +168,54 @@ output logAnalyticsWorkspaceId string = logAnalyticsWorkspace.id
 
 // Project Connection String - format for Azure AI Foundry SDK
 output projectConnectionString string = 'SubscriptionId=${subscription().subscriptionId};ResourceGroupName=${resourceGroup().name};ProjectName=${aiProjectName}'
+
+// Additional outputs to match Terraform
+output modelDeploymentId string = deployModel ? modelDeployment.id : ''
+output resourceGroupId string = resourceGroup().id
+output resourceGroupLocation string = resourceGroup().location
+
+// Connection Information (matches Terraform connection_info output)
+@secure()
+output connectionInfo object = {
+  endpoint: aiFoundry.properties.endpoint
+  resource_name: aiFoundry.name
+  resource_group: resourceGroup().name
+  subscription_id: subscription().subscriptionId
+  location: location
+  model_deployed: deployModel
+  model_name: deployModel ? 'gpt-4.1' : 'none'
+  project_endpoint: 'https://${aiFoundryName}.services.ai.azure.com/api/projects/${aiProjectName}'
+  project_name: aiProject.name
+  project_connection_string: 'SubscriptionId=${subscription().subscriptionId};ResourceGroupName=${resourceGroup().name};ProjectName=${aiProjectName}'
+  application_insights_name: applicationInsights.name
+  application_insights_connection_string: applicationInsights.properties.ConnectionString
+}
+
+// Portal URLs (matches Terraform portal_urls output)
+output portalUrls object = {
+  ai_foundry_portal: 'https://ai.azure.com'
+  resource_group_portal: 'https://portal.azure.com/#@/resource/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/overview'
+  ai_foundry_resource_portal: 'https://portal.azure.com/#@/resource${aiFoundry.id}/overview'
+}
+
+// Workshop config (matches Terraform workshop_config output)
+@secure()
+output workshopConfig object = {
+  endpoint: aiFoundry.properties.endpoint
+  project_endpoint: 'https://${aiFoundryName}.services.ai.azure.com/api/projects/${aiProjectName}'
+  project_connection_string: 'SubscriptionId=${subscription().subscriptionId};ResourceGroupName=${resourceGroup().name};ProjectName=${aiProjectName}'
+  model_deployment_name: deployModel ? 'gpt-4.1' : 'none'
+  app_insights_connection_string: applicationInsights.properties.ConnectionString
+}
+
+// Environment variables output in .env format (matches Terraform env_variables output)
+@secure()
+output envVariables string = '''
+AZURE_OPENAI_ENDPOINT=${aiFoundry.properties.endpoint}
+AZURE_OPENAI_DEPLOYMENT_NAME=${deployModel ? 'gpt-4.1-mini' : 'gpt-4.1-mini'}
+AZURE_OPENAI_API_VERSION=2024-10-21
+
+PROJECT_CONNECTION_STRING=SubscriptionId=${subscription().subscriptionId};ResourceGroupName=${resourceGroup().name};ProjectName=${aiProjectName}
+APPLICATION_INSIGHTS_CONNECTION_STRING=${applicationInsights.properties.ConnectionString}
+PROJECT_ENDPOINT=https://${aiFoundryName}.services.ai.azure.com/api/projects/${aiProjectName}
+'''

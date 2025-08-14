@@ -32,14 +32,19 @@ SUBSCRIPTION_NAME=$(az account show --query name --output tsv)
 
 echo -e "${GREEN}✅ Using subscription: ${SUBSCRIPTION_NAME} (${SUBSCRIPTION_ID})${NC}"
 
-# Set default values
-DEFAULT_LOCATION="eastus2"
+# Set default values (matching Terraform defaults)
+DEFAULT_LOCATION="Sweden Central"
 DEFAULT_RG_PREFIX="rg-foundry"
 DEFAULT_FOUNDRY_PREFIX="foundry"
+DEFAULT_ENVIRONMENT="dev"
+DEFAULT_SKU="S0"
 
 # Prompt for parameters
 read -p "Enter location [${DEFAULT_LOCATION}]: " LOCATION
 LOCATION=${LOCATION:-$DEFAULT_LOCATION}
+
+read -p "Enter environment (dev/test/staging/prod) [${DEFAULT_ENVIRONMENT}]: " ENVIRONMENT
+ENVIRONMENT=${ENVIRONMENT:-$DEFAULT_ENVIRONMENT}
 
 read -p "Enter resource group name prefix [${DEFAULT_RG_PREFIX}]: " RG_PREFIX
 RG_PREFIX=${RG_PREFIX:-$DEFAULT_RG_PREFIX}
@@ -47,25 +52,51 @@ RG_PREFIX=${RG_PREFIX:-$DEFAULT_RG_PREFIX}
 read -p "Enter AI Foundry name prefix [${DEFAULT_FOUNDRY_PREFIX}]: " FOUNDRY_PREFIX
 FOUNDRY_PREFIX=${FOUNDRY_PREFIX:-$DEFAULT_FOUNDRY_PREFIX}
 
+read -p "Enter SKU (S0/F0) [${DEFAULT_SKU}]: " SKU_NAME
+SKU_NAME=${SKU_NAME:-$DEFAULT_SKU}
+
 # Generate unique names
 TIMESTAMP=$(date +%s)
 UNIQUE_ID=$(echo -n "${SUBSCRIPTION_ID}${TIMESTAMP}" | md5sum | cut -c1-8)
 RESOURCE_GROUP_NAME="${RG_PREFIX}-${UNIQUE_ID}"
 AI_FOUNDRY_NAME="${FOUNDRY_PREFIX}-${UNIQUE_ID}"
+PROJECT_NAME="${AI_FOUNDRY_NAME}-project"
 
 echo ""
 echo -e "${YELLOW}📋 Deployment Configuration:${NC}"
 echo "  Location: ${LOCATION}"
+echo "  Environment: ${ENVIRONMENT}"
 echo "  Resource Group: ${RESOURCE_GROUP_NAME}"
 echo "  AI Foundry Name: ${AI_FOUNDRY_NAME}"
+echo "  Project Name: ${PROJECT_NAME}"
+echo "  SKU: ${SKU_NAME}"
 echo ""
 
-read -p "Deploy GPT-4.1 model? (y/n) [y]: " DEPLOY_MODEL
+read -p "Deploy GPT-4.1-mini model? (y/n) [y]: " DEPLOY_MODEL
 DEPLOY_MODEL=${DEPLOY_MODEL:-y}
 if [[ $DEPLOY_MODEL =~ ^[Yy]$ ]]; then
     DEPLOY_MODEL_PARAM="true"
 else
     DEPLOY_MODEL_PARAM="false"
+fi
+
+read -p "Model capacity (TPM in thousands, 1-1000) [100]: " MODEL_CAPACITY
+MODEL_CAPACITY=${MODEL_CAPACITY:-100}
+
+read -p "Disable local auth (recommended for production) (y/n) [y]: " DISABLE_LOCAL_AUTH
+DISABLE_LOCAL_AUTH=${DISABLE_LOCAL_AUTH:-y}
+if [[ $DISABLE_LOCAL_AUTH =~ ^[Yy]$ ]]; then
+    DISABLE_LOCAL_AUTH_PARAM="true"
+else
+    DISABLE_LOCAL_AUTH_PARAM="false"
+fi
+
+read -p "Enable public network access (y/n) [y]: " PUBLIC_NETWORK
+PUBLIC_NETWORK=${PUBLIC_NETWORK:-y}
+if [[ $PUBLIC_NETWORK =~ ^[Yy]$ ]]; then
+    PUBLIC_NETWORK_PARAM="true"
+else
+    PUBLIC_NETWORK_PARAM="false"
 fi
 
 # Confirm deployment
@@ -84,18 +115,45 @@ echo -e "${YELLOW}🔨 Starting deployment...${NC}"
 # Create deployment name
 DEPLOYMENT_NAME="foundry-deployment-${TIMESTAMP}"
 
-# Deploy using Bicep
-echo "Deploying Bicep template..."
-az deployment sub create \
-    --name "${DEPLOYMENT_NAME}" \
-    --location "${LOCATION}" \
-    --template-file main.bicep \
-    --parameters \
-        resourceGroupName="${RESOURCE_GROUP_NAME}" \
-        location="${LOCATION}" \
-        aiFoundryName="${AI_FOUNDRY_NAME}" \
-        deployModel="${DEPLOY_MODEL_PARAM}" \
-    --verbose
+# Deploy using Bicep with parameters file if it exists, otherwise use parameters
+if [ -f "parameters.bicepparam" ]; then
+    echo "Using parameters file..."
+    az deployment sub create \
+        --name "${DEPLOYMENT_NAME}" \
+        --location "${LOCATION}" \
+        --template-file main.bicep \
+        --parameters parameters.bicepparam \
+        --parameters \
+            resourceGroupName="${RESOURCE_GROUP_NAME}" \
+            location="${LOCATION}" \
+            environment="${ENVIRONMENT}" \
+            aiFoundryName="${AI_FOUNDRY_NAME}" \
+            projectName="${PROJECT_NAME}" \
+            skuName="${SKU_NAME}" \
+            deployModel="${DEPLOY_MODEL_PARAM}" \
+            modelCapacity="${MODEL_CAPACITY}" \
+            disableLocalAuth="${DISABLE_LOCAL_AUTH_PARAM}" \
+            publicNetworkAccessEnabled="${PUBLIC_NETWORK_PARAM}" \
+        --verbose
+else
+    echo "Using inline parameters..."
+    az deployment sub create \
+        --name "${DEPLOYMENT_NAME}" \
+        --location "${LOCATION}" \
+        --template-file main.bicep \
+        --parameters \
+            resourceGroupName="${RESOURCE_GROUP_NAME}" \
+            location="${LOCATION}" \
+            environment="${ENVIRONMENT}" \
+            aiFoundryName="${AI_FOUNDRY_NAME}" \
+            projectName="${PROJECT_NAME}" \
+            skuName="${SKU_NAME}" \
+            deployModel="${DEPLOY_MODEL_PARAM}" \
+            modelCapacity="${MODEL_CAPACITY}" \
+            disableLocalAuth="${DISABLE_LOCAL_AUTH_PARAM}" \
+            publicNetworkAccessEnabled="${PUBLIC_NETWORK_PARAM}" \
+        --verbose
+fi
 
 if [ $? -eq 0 ]; then
     echo ""
@@ -110,12 +168,26 @@ if [ $? -eq 0 ]; then
         echo "  Resource Group: $(echo $OUTPUTS | jq -r '.resourceGroupName.value // "N/A"')"
         echo "  AI Foundry Name: $(echo $OUTPUTS | jq -r '.aiFoundryName.value // "N/A"')"
         echo "  AI Foundry Endpoint: $(echo $OUTPUTS | jq -r '.aiFoundryEndpoint.value // "N/A"')"
-        echo "  AI Project Name: $(echo $OUTPUTS | jq -r '.aiProjectName.value // "N/A"')"
+        echo "  AI Project Name: $(echo $OUTPUTS | jq -r '.aiFoundryProjectName.value // "N/A"')"
+        echo "  Model Deployment: $(echo $OUTPUTS | jq -r '.modelDeploymentName.value // "N/A"')"
+        echo "  Application Insights: $(echo $OUTPUTS | jq -r '.applicationInsightsName.value // "N/A"')"
+        
+        # Output environment variables if available
+        ENV_VARS=$(echo $OUTPUTS | jq -r '.envVariables.value // ""')
+        if [ ! -z "$ENV_VARS" ] && [ "$ENV_VARS" != "null" ]; then
+            echo ""
+            echo -e "${YELLOW}🔧 Environment Variables (.env format):${NC}"
+            echo "$ENV_VARS"
+        fi
     fi
     
     echo ""
     echo -e "${GREEN}🌐 Access your AI Foundry:${NC}"
     echo "  Portal: https://ai.azure.com"
+    echo "  Resource Group Portal: https://portal.azure.com/#@/resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP_NAME}/overview"
+    echo ""
+    echo -e "${YELLOW}💾 Save outputs to file:${NC}"
+    echo "  az deployment sub show --name \"${DEPLOYMENT_NAME}\" --query properties.outputs --output json > outputs.json"
     echo ""
     echo -e "${YELLOW}🧹 To clean up resources later:${NC}"
     echo "  az group delete --name \"${RESOURCE_GROUP_NAME}\" --yes --no-wait"

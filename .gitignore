@@ -44,3 +44,4 @@ azure-deployment-outputs.json
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
+terraform.tfvars
