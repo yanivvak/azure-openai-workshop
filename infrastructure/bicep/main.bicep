@@ -127,3 +127,8 @@ output workshopConfig object = foundryResources.outputs.workshopConfig
 // Environment variables output in .env format (matches Terraform env_variables output)
 @secure()
 output envVariables string = foundryResources.outputs.envVariables
+
+// Individual environment variables for easy access in deploy script
+output azureOpenAIEndpoint string = foundryResources.outputs.aiFoundryEndpoint
+output azureOpenAIDeploymentName string = foundryResources.outputs.modelDeploymentName != '' ? foundryResources.outputs.modelDeploymentName : 'gpt-4.1-mini'
+output azureOpenAIApiVersion string = '2024-10-21'

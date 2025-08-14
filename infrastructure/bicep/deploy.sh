@@ -172,13 +172,60 @@ if [ $? -eq 0 ]; then
         echo "  Model Deployment: $(echo $OUTPUTS | jq -r '.modelDeploymentName.value // "N/A"')"
         echo "  Application Insights: $(echo $OUTPUTS | jq -r '.applicationInsightsName.value // "N/A"')"
         
-        # Output environment variables if available
-        ENV_VARS=$(echo $OUTPUTS | jq -r '.envVariables.value // ""')
-        if [ ! -z "$ENV_VARS" ] && [ "$ENV_VARS" != "null" ]; then
-            echo ""
-            echo -e "${YELLOW}🔧 Environment Variables (.env format):${NC}"
-            echo "$ENV_VARS"
-        fi
+        # Output environment variables if available (secure outputs won't show in JSON)
+        echo ""
+        echo -e "${YELLOW}🔧 Environment Variables (.env format):${NC}"
+        echo "# Copy these values to your .env file:"
+        echo ""
+        
+        # Get individual values to construct the .env output
+        ENDPOINT=$(echo $OUTPUTS | jq -r '.azureOpenAIEndpoint.value // .aiFoundryEndpoint.value // "N/A"')
+        DEPLOYMENT_NAME=$(echo $OUTPUTS | jq -r '.azureOpenAIDeploymentName.value // .modelDeploymentName.value // "gpt-4.1-mini"')
+        API_VERSION=$(echo $OUTPUTS | jq -r '.azureOpenAIApiVersion.value // "2024-10-21"')
+        PROJECT_CONN=$(echo $OUTPUTS | jq -r '.projectConnectionString.value // "N/A"')
+        APP_INSIGHTS_CONN=$(echo $OUTPUTS | jq -r '.applicationInsightsConnectionString.value // "N/A"')
+        PROJECT_ENDPOINT=$(echo $OUTPUTS | jq -r '.aiFoundryProjectEndpoint.value // "N/A"')
+        
+        # Display the environment variables
+        echo "AZURE_OPENAI_ENDPOINT=${ENDPOINT}"
+        echo "AZURE_OPENAI_DEPLOYMENT_NAME=${DEPLOYMENT_NAME}"
+        echo "AZURE_OPENAI_API_VERSION=${API_VERSION}"
+        echo ""
+        echo "PROJECT_CONNECTION_STRING=${PROJECT_CONN}"
+        echo "APPLICATION_INSIGHTS_CONNECTION_STRING=${APP_INSIGHTS_CONN}"
+        echo "PROJECT_ENDPOINT=${PROJECT_ENDPOINT}"
+        
+        # Save to .env file in project root
+        ENV_FILE="../../.env"
+        echo ""
+        echo -e "${YELLOW}💾 Saving environment variables to ${ENV_FILE}...${NC}"
+        
+        cat > "${ENV_FILE}" << EOF
+# Azure AI Foundry Workshop Environment Variables
+# Generated automatically by Bicep deployment on $(date)
+
+# Azure OpenAI Endpoint (REQUIRED)
+# This is the AI Foundry resource endpoint from your deployment
+AZURE_OPENAI_ENDPOINT=${ENDPOINT}
+AZURE_OPENAI_DEPLOYMENT_NAME=${DEPLOYMENT_NAME}
+AZURE_OPENAI_API_VERSION=${API_VERSION}
+
+PROJECT_CONNECTION_STRING=${PROJECT_CONN}
+APPLICATION_INSIGHTS_CONNECTION_STRING=${APP_INSIGHTS_CONN}
+PROJECT_ENDPOINT=${PROJECT_ENDPOINT}
+
+# Azure OpenAI API Key (REQUIRED for key-based auth)
+# Get this from Azure Portal -> Your AI Foundry resource -> Keys and Endpoint
+# Use either KEY1 or KEY2. Leave commented if using Entra ID authentication
+# AZURE_OPENAI_API_KEY=your-api-key-here
+
+# ===== AUTHENTICATION METHOD =====
+# Choose your authentication method:
+# 1. For Key-based authentication: Set AZURE_OPENAI_API_KEY above
+# 2. For Entra ID authentication (recommended): Keep AZURE_OPENAI_API_KEY commented
+EOF
+        
+        echo -e "${GREEN}✅ Environment variables saved to ${ENV_FILE}${NC}"
     fi
     
     echo ""

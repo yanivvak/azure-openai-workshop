@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.37.4.10188",
-      "templateHash": "17882655833119656695"
+      "templateHash": "6548155888958163674"
     }
   },
   "parameters": {
@@ -588,6 +588,18 @@
     "envVariables": {
       "type": "securestring",
       "value": "[listOutputsWithSecureValues('foundryResources', '2022-09-01').envVariables]"
+    },
+    "azureOpenAIEndpoint": {
+      "type": "string",
+      "value": "[reference('foundryResources').outputs.aiFoundryEndpoint.value]"
+    },
+    "azureOpenAIDeploymentName": {
+      "type": "string",
+      "value": "[if(not(equals(reference('foundryResources').outputs.modelDeploymentName.value, '')), reference('foundryResources').outputs.modelDeploymentName.value, 'gpt-4.1-mini')]"
+    },
+    "azureOpenAIApiVersion": {
+      "type": "string",
+      "value": "2024-10-21"
     }
   }
 }
