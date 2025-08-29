@@ -1,0 +1,4 @@
+// Simple test to check if tables exist
+// Run this to verify tables were created
+
+.show tables

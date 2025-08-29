@@ -2,12 +2,21 @@
 
 A comprehensive hands-on workshop for building AI applications with Azure AI Foundry. Learn to deploy models, implement tracing & observability, and create intelligent agent-based applications.
 
-## � What You'll Learn
+## ⚡ Quick Start (5 Minutes)
+
+**Want to jump straight to enterprise security analytics?**
+
+📖 **[Follow the Quick Start Guide →](QUICK_START.md)**
+
+3 simple commands to deploy Azure Data Explorer and generate 120+ realistic security test scenarios with AI analysis!
+
+## 📚 What You'll Learn
 
 - Deploy and test Azure OpenAI models
 - Implement monitoring and tracing for AI applications  
 - Build intelligent agent-based applications
 - Work with Azure AI Foundry SDK
+- **NEW:** Enterprise-scale security analytics with Azure Data Explorer
 
 ## 🚀 Prerequisites
 
@@ -182,6 +191,7 @@ The workshop includes all necessary packages:
 - **Azure AI**: `azure-ai-projects[agents]`, `azure-ai-inference`, `azure-identity`
 - **OpenAI SDK**: `openai` with Azure OpenAI support
 - **Observability**: `opentelemetry-*`, `azure-monitor-opentelemetry`
+- **Data Analytics**: `azure-kusto-data`, `azure-kusto-ingest` (Azure Data Explorer)
 - **Data & Analysis**: `pandas`, `numpy`, `matplotlib`
 - **Jupyter**: `jupyter`, `ipykernel`
 

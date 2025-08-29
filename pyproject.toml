@@ -38,6 +38,9 @@ dependencies = [
     "azure-core-tracing-opentelemetry>=1.0.0b1",
     "opentelemetry-exporter-otlp>=1.21.0",
     "azure-ai-agents>=1.1.0",
+    # Azure Data Explorer (ADX) for advanced analytics
+    "azure-kusto-data>=4.4.0",
+    "azure-kusto-ingest>=4.4.0",
 ]
 
 [project.optional-dependencies]

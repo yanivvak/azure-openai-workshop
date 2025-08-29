@@ -1,0 +1,38 @@
+# Environment files with secrets
+.env
+*.env
+!.env.example
+
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfstate.*.backup
+*.tfplan
+*.tfvars
+!*.tfvars.example
+
+# Azure files
+azure.conf
+
+# Log files
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local data files
+security_tests_*.json
+llm_interactions_*.json

@@ -1,0 +1,19 @@
+// Step 1: Create ONLY the OTelTraces table first
+// Copy and paste this single command to test
+
+.create-or-alter table OTelTraces (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    ParentSpanId: string,
+    OperationName: string,
+    ServiceName: string,
+    Duration: timespan,
+    StatusCode: string,
+    StatusMessage: string,
+    Attributes: dynamic,
+    Events: dynamic,
+    Links: dynamic,
+    Resource: dynamic,
+    InstrumentationScope: dynamic
+)

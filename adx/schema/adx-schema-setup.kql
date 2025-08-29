@@ -1,0 +1,223 @@
+// Azure Data Explorer (ADX) Schema Setup for Security Pen-Testing
+// Copy and paste these commands into ADX Web UI to create the required tables and functions
+
+// =============================================================================
+// CREATE TABLES
+// =============================================================================
+
+// 1. Create table for OpenTelemetry traces
+.create-or-alter table OTelTraces (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    ParentSpanId: string,
+    OperationName: string,
+    ServiceName: string,
+    Duration: timespan,
+    StatusCode: string,
+    StatusMessage: string,
+    Attributes: dynamic,
+    Events: dynamic,
+    Links: dynamic,
+    Resource: dynamic,
+    InstrumentationScope: dynamic
+)
+
+// 2. Create table for security pen-testing scenarios
+.create-or-alter table SecurityTraces (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    TestType: string,
+    TestName: string,
+    Target: string,
+    Severity: string,
+    Status: string,
+    Duration: timespan,
+    Findings: dynamic,
+    Recommendations: dynamic,
+    TesterInfo: dynamic,
+    Environment: string
+)
+
+// 3. Create table for LLM interactions
+.create-or-alter table LLMInteractions (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    Model: string,
+    TokensUsed: int,
+    PromptTokens: int,
+    CompletionTokens: int,
+    Temperature: real,
+    MaxTokens: int,
+    PromptHash: string,
+    ResponseLength: int,
+    ProcessingTime: timespan,
+    Cost: real,
+    Success: bool,
+    ErrorMessage: string
+)
+
+// =============================================================================
+// CREATE JSON INGESTION MAPPINGS
+// =============================================================================
+
+// 4. Create mapping for OpenTelemetry traces JSON ingestion
+.create-or-alter table OTelTraces ingestion json mapping 'OTelTracesMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"ParentSpanId","path":"$.parentSpanId","datatype":"string"},
+    {"column":"OperationName","path":"$.operationName","datatype":"string"},
+    {"column":"ServiceName","path":"$.serviceName","datatype":"string"},
+    {"column":"Duration","path":"$.duration","datatype":"timespan"},
+    {"column":"StatusCode","path":"$.statusCode","datatype":"string"},
+    {"column":"StatusMessage","path":"$.statusMessage","datatype":"string"},
+    {"column":"Attributes","path":"$.attributes","datatype":"dynamic"},
+    {"column":"Events","path":"$.events","datatype":"dynamic"},
+    {"column":"Links","path":"$.links","datatype":"dynamic"},
+    {"column":"Resource","path":"$.resource","datatype":"dynamic"},
+    {"column":"InstrumentationScope","path":"$.instrumentationScope","datatype":"dynamic"}
+]'
+
+// 5. Create mapping for Security traces JSON ingestion
+.create-or-alter table SecurityTraces ingestion json mapping 'SecurityTracesMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"TestType","path":"$.testType","datatype":"string"},
+    {"column":"TestName","path":"$.testName","datatype":"string"},
+    {"column":"Target","path":"$.target","datatype":"string"},
+    {"column":"Severity","path":"$.severity","datatype":"string"},
+    {"column":"Status","path":"$.status","datatype":"string"},
+    {"column":"Duration","path":"$.duration","datatype":"timespan"},
+    {"column":"Findings","path":"$.findings","datatype":"dynamic"},
+    {"column":"Recommendations","path":"$.recommendations","datatype":"dynamic"},
+    {"column":"TesterInfo","path":"$.testerInfo","datatype":"dynamic"},
+    {"column":"Environment","path":"$.environment","datatype":"string"}
+]'
+
+// 6. Create mapping for LLM interactions JSON ingestion
+.create-or-alter table LLMInteractions ingestion json mapping 'LLMInteractionsMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"Model","path":"$.model","datatype":"string"},
+    {"column":"TokensUsed","path":"$.tokensUsed","datatype":"int"},
+    {"column":"PromptTokens","path":"$.promptTokens","datatype":"int"},
+    {"column":"CompletionTokens","path":"$.completionTokens","datatype":"int"},
+    {"column":"Temperature","path":"$.temperature","datatype":"real"},
+    {"column":"MaxTokens","path":"$.maxTokens","datatype":"int"},
+    {"column":"PromptHash","path":"$.promptHash","datatype":"string"},
+    {"column":"ResponseLength","path":"$.responseLength","datatype":"int"},
+    {"column":"ProcessingTime","path":"$.processingTime","datatype":"timespan"},
+    {"column":"Cost","path":"$.cost","datatype":"real"},
+    {"column":"Success","path":"$.success","datatype":"bool"},
+    {"column":"ErrorMessage","path":"$.errorMessage","datatype":"string"}
+]'
+
+// =============================================================================
+// CREATE ANALYTICAL FUNCTIONS
+// =============================================================================
+
+// 7. Function to get traces by time range
+.create-or-alter function GetTracesByTimeRange(startTime: datetime, endTime: datetime) {
+    OTelTraces
+    | where TimeStamp between (startTime .. endTime)
+    | order by TimeStamp desc
+}
+
+// 8. Function to get security tests by type
+.create-or-alter function GetSecurityTestsByType(testType: string, days: int = 7) {
+    SecurityTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | where TestType == testType
+    | order by TimeStamp desc
+}
+
+// 9. Function to analyze LLM costs
+.create-or-alter function GetLLMCostAnalysis(days: int = 7) {
+    LLMInteractions
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | summarize 
+        TotalCost = sum(Cost), 
+        TotalTokens = sum(TokensUsed), 
+        AvgProcessingTime = avg(ProcessingTime), 
+        TotalRequests = count() 
+    by Model
+    | order by TotalCost desc
+}
+
+// 10. Function to get failed operations
+.create-or-alter function GetFailedOperations(days: int = 1) {
+    OTelTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | where StatusCode != "OK"
+    | extend FailureRate = todouble(1)
+    | summarize 
+        FailureCount = count(), 
+        FailureRate = avg(FailureRate) 
+    by OperationName, StatusCode
+    | order by FailureCount desc
+}
+
+// 11. Function to get security vulnerabilities
+.create-or-alter function GetSecurityVulnerabilities(severity: string = "") {
+    SecurityTraces
+    | where TimeStamp >= ago(7d)
+    | where isempty(severity) or Severity == severity
+    | where Status == "FAILED" or Status == "VULNERABLE"
+    | summarize 
+        VulnCount = count(), 
+        UniqueTargets = dcount(Target) 
+    by TestType, Severity
+    | order by VulnCount desc
+}
+
+// 12. Function to get security test metrics
+.create-or-alter function GetSecurityTestMetrics(days: int = 7) {
+    SecurityTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | summarize 
+        TotalTests = count(),
+        FailedTests = countif(Status in ("FAILED", "VULNERABLE")),
+        CriticalFindings = countif(Severity == "CRITICAL"),
+        HighFindings = countif(Severity == "HIGH"),
+        UniqueTargets = dcount(Target),
+        AvgTestDuration = avg(Duration)
+    by TestType
+    | order by TotalTests desc
+}
+
+// 13. Function to get top vulnerable targets
+.create-or-alter function GetTopVulnerableTargets(days: int = 7) {
+    SecurityTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | where Status in ("FAILED", "VULNERABLE")
+    | summarize 
+        VulnerabilityCount = count(),
+        CriticalCount = countif(Severity == "CRITICAL"),
+        HighCount = countif(Severity == "HIGH"),
+        LastTested = max(TimeStamp)
+    by Target
+    | order by VulnerabilityCount desc
+    | take 10
+}
+
+// =============================================================================
+// VERIFICATION QUERIES
+// =============================================================================
+
+// Test the schema
+OTelTraces | getschema
+SecurityTraces | getschema  
+LLMInteractions | getschema
+
+// Test the functions
+print "Schema setup completed successfully!"
+print "Tables created: OTelTraces, SecurityTraces, LLMInteractions"
+print "Functions created: 7 analytical functions for security analytics"

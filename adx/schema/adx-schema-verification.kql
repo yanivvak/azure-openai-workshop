@@ -1,0 +1,31 @@
+// Azure Data Explorer (ADX) Schema Verification
+// Run these commands AFTER the schema setup to verify everything was created correctly
+
+// =============================================================================
+// VERIFICATION QUERIES - Run these SEPARATELY after schema setup
+// =============================================================================
+
+// 1. Check table schemas
+OTelTraces | getschema
+
+// 2. Check SecurityTraces schema
+SecurityTraces | getschema  
+
+// 3. Check LLMInteractions schema
+LLMInteractions | getschema
+
+// 4. List all tables in the database
+.show tables
+
+// 5. List all functions in the database
+.show functions
+
+// 6. Test one of the functions
+GetSecurityTestMetrics(1)
+
+// 7. Check table row counts (should be 0 initially)
+union 
+    (OTelTraces | count | extend TableName = "OTelTraces"),
+    (SecurityTraces | count | extend TableName = "SecurityTraces"),
+    (LLMInteractions | count | extend TableName = "LLMInteractions")
+| project TableName, Count

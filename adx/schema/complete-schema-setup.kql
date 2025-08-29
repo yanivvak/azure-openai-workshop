@@ -1,0 +1,160 @@
+// Azure Data Explorer (ADX) Complete Schema Setup
+// Copy and paste this entire script into ADX Web UI and run all at once
+
+// =============================================================================
+// CREATE JSON INGESTION MAPPINGS
+// =============================================================================
+
+// Create mapping for OpenTelemetry traces JSON ingestion
+.create table OTelTraces ingestion json mapping 'OTelTracesMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"ParentSpanId","path":"$.parentSpanId","datatype":"string"},
+    {"column":"OperationName","path":"$.operationName","datatype":"string"},
+    {"column":"ServiceName","path":"$.serviceName","datatype":"string"},
+    {"column":"Duration","path":"$.duration","datatype":"timespan"},
+    {"column":"StatusCode","path":"$.statusCode","datatype":"string"},
+    {"column":"StatusMessage","path":"$.statusMessage","datatype":"string"},
+    {"column":"Attributes","path":"$.attributes","datatype":"dynamic"},
+    {"column":"Events","path":"$.events","datatype":"dynamic"},
+    {"column":"Links","path":"$.links","datatype":"dynamic"},
+    {"column":"Resource","path":"$.resource","datatype":"dynamic"},
+    {"column":"InstrumentationScope","path":"$.instrumentationScope","datatype":"dynamic"}
+]'
+
+// Create mapping for Security traces JSON ingestion
+.create table SecurityTraces ingestion json mapping 'SecurityTracesMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"TestType","path":"$.testType","datatype":"string"},
+    {"column":"TestName","path":"$.testName","datatype":"string"},
+    {"column":"Target","path":"$.target","datatype":"string"},
+    {"column":"Severity","path":"$.severity","datatype":"string"},
+    {"column":"Status","path":"$.status","datatype":"string"},
+    {"column":"Duration","path":"$.duration","datatype":"timespan"},
+    {"column":"Findings","path":"$.findings","datatype":"dynamic"},
+    {"column":"Recommendations","path":"$.recommendations","datatype":"dynamic"},
+    {"column":"TesterInfo","path":"$.testerInfo","datatype":"dynamic"},
+    {"column":"Environment","path":"$.environment","datatype":"string"}
+]'
+
+// Create mapping for LLM interactions JSON ingestion
+.create table LLMInteractions ingestion json mapping 'LLMInteractionsMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"Model","path":"$.model","datatype":"string"},
+    {"column":"TokensUsed","path":"$.tokensUsed","datatype":"int"},
+    {"column":"PromptTokens","path":"$.promptTokens","datatype":"int"},
+    {"column":"CompletionTokens","path":"$.completionTokens","datatype":"int"},
+    {"column":"Temperature","path":"$.temperature","datatype":"real"},
+    {"column":"MaxTokens","path":"$.maxTokens","datatype":"int"},
+    {"column":"PromptHash","path":"$.promptHash","datatype":"string"},
+    {"column":"ResponseLength","path":"$.responseLength","datatype":"int"},
+    {"column":"ProcessingTime","path":"$.processingTime","datatype":"timespan"},
+    {"column":"Cost","path":"$.cost","datatype":"real"},
+    {"column":"Success","path":"$.success","datatype":"bool"},
+    {"column":"ErrorMessage","path":"$.errorMessage","datatype":"string"}
+]'
+
+// =============================================================================
+// CREATE ANALYTICAL FUNCTIONS
+// =============================================================================
+
+// Function to get traces by time range
+.create function GetTracesByTimeRange(startTime: datetime, endTime: datetime) {
+    OTelTraces
+    | where TimeStamp between (startTime .. endTime)
+    | order by TimeStamp desc
+}
+
+// Function to get security tests by type
+.create function GetSecurityTestsByType(testType: string, days: int = 7) {
+    SecurityTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | where TestType == testType
+    | order by TimeStamp desc
+}
+
+// Function to analyze LLM costs
+.create function GetLLMCostAnalysis(days: int = 7) {
+    LLMInteractions
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | summarize 
+        TotalCost = sum(Cost), 
+        TotalTokens = sum(TokensUsed), 
+        AvgProcessingTime = avg(ProcessingTime), 
+        TotalRequests = count() 
+    by Model
+    | order by TotalCost desc
+}
+
+// Function to get failed operations
+.create function GetFailedOperations(days: int = 1) {
+    OTelTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | where StatusCode != "OK"
+    | extend FailureRate = todouble(1)
+    | summarize 
+        FailureCount = count(), 
+        FailureRate = avg(FailureRate) 
+    by OperationName, StatusCode
+    | order by FailureCount desc
+}
+
+// Function to get security vulnerabilities
+.create function GetSecurityVulnerabilities(severity: string = "") {
+    SecurityTraces
+    | where TimeStamp >= ago(7d)
+    | where isempty(severity) or Severity == severity
+    | where Status == "FAILED" or Status == "VULNERABLE"
+    | summarize 
+        VulnCount = count(), 
+        UniqueTargets = dcount(Target) 
+    by TestType, Severity
+    | order by VulnCount desc
+}
+
+// Function to get security test metrics
+.create function GetSecurityTestMetrics(days: int = 7) {
+    SecurityTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | summarize 
+        TotalTests = count(),
+        FailedTests = countif(Status in ("FAILED", "VULNERABLE")),
+        CriticalFindings = countif(Severity == "CRITICAL"),
+        HighFindings = countif(Severity == "HIGH"),
+        UniqueTargets = dcount(Target),
+        AvgTestDuration = avg(Duration)
+    by TestType
+    | order by TotalTests desc
+}
+
+// Function to get top vulnerable targets
+.create function GetTopVulnerableTargets(days: int = 7) {
+    SecurityTraces
+    | where TimeStamp >= ago(tolong(days) * 1d)
+    | where Status in ("FAILED", "VULNERABLE")
+    | summarize 
+        VulnerabilityCount = count(),
+        CriticalCount = countif(Severity == "CRITICAL"),
+        HighCount = countif(Severity == "HIGH"),
+        LastTested = max(TimeStamp)
+    by Target
+    | order by VulnerabilityCount desc
+    | take 10
+}
+
+// =============================================================================
+// VERIFICATION
+// =============================================================================
+
+print "Schema setup completed successfully!";
+print "Tables created: OTelTraces, SecurityTraces, LLMInteractions";
+print "JSON mappings created: OTelTracesMapping, SecurityTracesMapping, LLMInteractionsMapping";
+print "Functions created: 7 analytical functions for security analytics"

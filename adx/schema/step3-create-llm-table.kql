@@ -1,0 +1,20 @@
+// Step 3: Create the LLMInteractions table
+// Run this AFTER step 2 succeeds
+
+.create-or-alter table LLMInteractions (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    Model: string,
+    TokensUsed: int,
+    PromptTokens: int,
+    CompletionTokens: int,
+    Temperature: real,
+    MaxTokens: int,
+    PromptHash: string,
+    ResponseLength: int,
+    ProcessingTime: timespan,
+    Cost: real,
+    Success: bool,
+    ErrorMessage: string
+)

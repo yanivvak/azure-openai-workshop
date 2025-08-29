@@ -1,0 +1,20 @@
+// Step 4: Create JSON mappings for OTelTraces
+// Run this AFTER all tables are created successfully
+
+.create-or-alter table OTelTraces ingestion json mapping 'OTelTracesMapping' 
+'[
+    {"column":"TimeStamp","path":"$.timestamp","datatype":"datetime"},
+    {"column":"TraceId","path":"$.traceId","datatype":"string"},
+    {"column":"SpanId","path":"$.spanId","datatype":"string"},
+    {"column":"ParentSpanId","path":"$.parentSpanId","datatype":"string"},
+    {"column":"OperationName","path":"$.operationName","datatype":"string"},
+    {"column":"ServiceName","path":"$.serviceName","datatype":"string"},
+    {"column":"Duration","path":"$.duration","datatype":"timespan"},
+    {"column":"StatusCode","path":"$.statusCode","datatype":"string"},
+    {"column":"StatusMessage","path":"$.statusMessage","datatype":"string"},
+    {"column":"Attributes","path":"$.attributes","datatype":"dynamic"},
+    {"column":"Events","path":"$.events","datatype":"dynamic"},
+    {"column":"Links","path":"$.links","datatype":"dynamic"},
+    {"column":"Resource","path":"$.resource","datatype":"dynamic"},
+    {"column":"InstrumentationScope","path":"$.instrumentationScope","datatype":"dynamic"}
+]'

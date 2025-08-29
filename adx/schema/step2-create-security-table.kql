@@ -1,0 +1,18 @@
+// Step 2: Create the SecurityTraces table
+// Run this AFTER step 1 succeeds
+
+.create-or-alter table SecurityTraces (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    TestType: string,
+    TestName: string,
+    Target: string,
+    Severity: string,
+    Status: string,
+    Duration: timespan,
+    Findings: dynamic,
+    Recommendations: dynamic,
+    TesterInfo: dynamic,
+    Environment: string
+)

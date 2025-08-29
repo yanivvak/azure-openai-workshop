@@ -1,0 +1,46 @@
+# Example terraform.tfvars for ADX standalone deployment
+# Copy this file to terraform.tfvars and customize the values
+
+# Basic Configuration
+location             = "East US"
+environment          = "dev"
+resource_group_name  = ""  # Leave empty for auto-generated name
+
+# ADX Cluster Configuration
+adx_cluster_name     = ""  # Leave empty for auto-generated name
+adx_sku_name         = "Dev(No SLA)_Standard_E2a_v4"  # Cost-effective for development
+adx_capacity         = 1
+adx_database_name    = "TracingDB"
+
+# Cost Optimization
+enable_adx_auto_stop = true
+adx_hot_cache_period = "P7D"   # Keep data hot for 7 days
+adx_soft_delete_period = "P30D" # Keep data for 30 days total
+
+# Event Hub Configuration
+eventhub_partition_count    = 2
+eventhub_message_retention  = 1
+
+# Security and Tracing
+enable_security_tracing = true
+trace_retention_days    = 30
+enable_cost_monitoring  = true
+
+# Additional Tags (optional)
+additional_tags = {
+  Owner       = "YourName"
+  Project     = "SecurityTracing"
+  CostCenter  = "Development"
+  Purpose     = "PenTestingAnalytics"
+}
+
+# Production Configuration (uncomment and modify for production use)
+# location                    = "East US"
+# environment                 = "prod"
+# adx_sku_name               = "Standard_E4a_v4"
+# adx_capacity               = 2
+# enable_adx_auto_stop       = false
+# adx_hot_cache_period       = "P30D"
+# adx_soft_delete_period     = "P365D"
+# eventhub_partition_count   = 4
+# trace_retention_days       = 90
