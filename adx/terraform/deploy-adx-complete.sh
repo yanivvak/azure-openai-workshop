@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Azure Data Explorer Complete Setup Script
+# Azure Data Explorer ✅ Complete Setup Script
 # This script deploys infrastructure AND sets up the database schema automatically
 
 set -e
@@ -17,22 +17,22 @@ NC='\033[0m' # No Color
 # ASCII Art Banner
 echo -e "${CYAN}"
 cat << "EOF"
-    ╔═══════════════════════════════════════════════════════════════╗
-    ║                                                               ║
-    ║    Azure Data Explorer Complete Setup for Security           ║
-    ║                                                               ║
-    ║    Infrastructure + Schema + Data Connection                  ║
-    ║                                                               ║
-    ╚═══════════════════════════════════════════════════════════════╝
+    
+                                                                   
+        Azure Data Explorer ✅ Complete Setup for Security           
+                                                                   
+        Infrastructure + Schema + Data Connection                  
+                                                                   
+    
 EOF
 echo -e "${NC}"
 
 # Function to print section headers
 print_section() {
     echo ""
-    echo -e "${PURPLE}════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${PURPLE}${NC}"
     echo -e "${PURPLE}  $1${NC}"
-    echo -e "${PURPLE}════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${PURPLE}${NC}"
     echo ""
 }
 
@@ -40,7 +40,7 @@ print_section() {
 print_step() {
     echo ""
     echo -e "${BLUE}Step $1: $2${NC}"
-    echo -e "${BLUE}───────────────────────────────────────────────────────────────${NC}"
+    echo -e "${BLUE}${NC}"
 }
 
 # Function to check prerequisites
@@ -79,8 +79,8 @@ check_prerequisites() {
     fi
     
     # Check if schema file exists
-    if [ ! -f "../schema/complete-schema-setup.kql" ]; then
-        echo -e "${RED}Schema file not found: ../schema/complete-schema-setup.kql${NC}"
+    if [ ! -f "../schema/✅ complete-schema-setup.kql" ]; then
+        echo -e "${RED}Schema file not found: ✅ ../schema/✅ complete-schema-setup.kql${NC}"
         ((errors++))
     else
         echo -e "${GREEN}Schema file found${NC}"
@@ -108,9 +108,9 @@ deploy_infrastructure() {
     echo -e "${YELLOW}   This may take 10-15 minutes for ADX cluster creation...${NC}"
     
     if terraform apply -auto-approve; then
-        echo -e "${GREEN}[SUCCESS] Infrastructure deployment completed successfully${NC}"
+        echo -e "${GREEN}[SUCCESS] Infrastructure deployment completed ✅ successfully${NC}"
     else
-        echo -e "${RED}[ERROR] Infrastructure deployment failed${NC}"
+        echo -e "${RED}[❌ ERROR] Infrastructure deployment ❌ failed${NC}"
         exit 1
     fi
     
@@ -154,7 +154,7 @@ wait_for_cluster() {
         ((attempt++))
     done
     
-    echo -e "${RED}[ERROR] Cluster did not become ready within expected time${NC}"
+    echo -e "${RED}[❌ ERROR] Cluster did not become ready within expected time${NC}"
     echo -e "${YELLOW}[WARNING] You may need to manually start the cluster and re-run schema setup${NC}"
     return 1
 }
@@ -166,9 +166,9 @@ setup_database_schema() {
     echo -e "${YELLOW}⏳ Running automated schema setup...${NC}"
     
     if ./setup-adx-schema.sh; then
-        echo -e "${GREEN}[SUCCESS] Database schema setup completed successfully${NC}"
+        echo -e "${GREEN}[SUCCESS] Database schema setup completed ✅ successfully${NC}"
     else
-        echo -e "${RED}[ERROR] Database schema setup failed${NC}"
+        echo -e "${RED}[❌ ERROR] Database schema setup ❌ failed${NC}"
         echo -e "${YELLOW}[WARNING] You may need to run the schema setup manually${NC}"
         return 1
     fi
@@ -183,9 +183,9 @@ finalize_setup() {
     # Run terraform apply again to create any remaining resources
     # (data connections that require the schema to exist)
     if terraform apply -auto-approve; then
-        echo -e "${GREEN}[SUCCESS] Data connections created successfully${NC}"
+        echo -e "${GREEN}[SUCCESS] Data connections ✅ created successfully${NC}"
     else
-        echo -e "${YELLOW}[WARNING] Data connection creation may have failed, but infrastructure is ready${NC}"
+        echo -e "${YELLOW}[WARNING] Data connection creation may have ❌ failed, but infrastructure is ready${NC}"
         echo -e "${YELLOW}   You can manually create data connections later if needed${NC}"
     fi
     
@@ -216,14 +216,14 @@ EOF
 
 # Function to print success summary
 print_success_summary() {
-    print_section "🎉 SETUP COMPLETED SUCCESSFULLY!"
+    print_section " SETUP COMPLETED ✅ SUCCESSFULLY!"
     
     echo -e "${GREEN}[SUCCESS] Infrastructure deployed and configured${NC}"
     echo -e "${GREEN}[SUCCESS] Database schema created (3 tables, 3 mappings, 7 functions)${NC}"
     echo -e "${GREEN}[SUCCESS] Data connections established${NC}"
     echo -e "${GREEN}[SUCCESS] Environment variables configured${NC}"
     echo ""
-    echo -e "${BLUE}🔗 What's Next:${NC}"
+    echo -e "${BLUE} What's Next:${NC}"
     echo ""
     echo -e "${YELLOW}1. Load environment variables:${NC}"
     echo -e "   ${CYAN}source ../../.env${NC}"
@@ -246,7 +246,7 @@ print_success_summary() {
 main() {
     # Check if destroy flag is passed
     if [[ "$1" == "--destroy" ]]; then
-        echo -e "${RED}🗑️  Destroying Azure Data Explorer infrastructure...${NC}"
+        echo -e "${RED}  Destroying Azure Data Explorer infrastructure...${NC}"
         terraform destroy -auto-approve
         echo -e "${GREEN}[SUCCESS] Infrastructure destroyed${NC}"
         exit 0
@@ -254,12 +254,12 @@ main() {
     
     # Check if help flag is passed
     if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-        echo "Azure Data Explorer Complete Setup"
+        echo "Azure Data Explorer ✅ Complete Setup"
         echo ""
         echo "Usage:"
-        echo "  ./deploy-adx-complete.sh           Deploy complete ADX infrastructure"
-        echo "  ./deploy-adx-complete.sh --destroy Destroy ADX infrastructure"
-        echo "  ./deploy-adx-complete.sh --help    Show this help message"
+        echo "  ./deploy-adx-✅ complete.sh           Deploy ✅ complete ADX infrastructure"
+        echo "  ./deploy-adx-✅ complete.sh --destroy Destroy ADX infrastructure"
+        echo "  ./deploy-adx-✅ complete.sh --help    Show this help message"
         echo ""
         exit 0
     fi

@@ -152,8 +152,7 @@ class SecretScanner:
         """Scan a single file for secrets"""
         matches = []
         
-        try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        try: ❌ with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
                 
             for line_num, line in enumerate(lines, 1):
@@ -189,8 +188,7 @@ class SecretScanner:
                             redacted_value=redacted
                         ))
                         
-        except Exception as e:
-            print(f"Error scanning {file_path}: {e}")
+        except Exception as e: ❌ print(f"❌ Error scanning {file_path}: {e}")
             
         return matches
 
@@ -234,14 +232,14 @@ class SecretScanner:
     def generate_text_report(self, matches: List[SecretMatch]) -> str:
         """Generate a human-readable text report"""
         report = []
-        report.append("🔍 SECRETS AND API KEYS SCAN REPORT")
+        report.append(" SECRETS AND API KEYS SCAN REPORT")
         report.append("=" * 50)
         report.append(f"Scan completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         report.append(f"Total potential secrets found: {len(matches)}")
         report.append("")
         
         if not matches:
-            report.append("✅ No secrets detected in the scanned files.")
+            report.append(" No secrets detected in the scanned files.")
             return "\n".join(report)
         
         # Group by confidence level
@@ -257,7 +255,7 @@ class SecretScanner:
             by_type[match.secret_type].append(match)
         
         # Summary by type
-        report.append("📊 SUMMARY BY SECRET TYPE")
+        report.append(" SUMMARY BY SECRET TYPE")
         report.append("-" * 30)
         for secret_type, type_matches in sorted(by_type.items()):
             description = self.patterns[secret_type]['description']
@@ -266,7 +264,7 @@ class SecretScanner:
         
         # High confidence secrets
         if high_confidence:
-            report.append("🚨 HIGH CONFIDENCE SECRETS (Immediate attention required)")
+            report.append(" HIGH CONFIDENCE SECRETS (Immediate attention required)")
             report.append("-" * 60)
             for match in high_confidence:
                 report.append(f"  File: {match.file_path}")
@@ -278,7 +276,7 @@ class SecretScanner:
         
         # Medium confidence secrets
         if medium_confidence:
-            report.append("⚠️  MEDIUM CONFIDENCE SECRETS (Review recommended)")
+            report.append("  MEDIUM CONFIDENCE SECRETS (Review recommended)")
             report.append("-" * 55)
             for match in medium_confidence:
                 report.append(f"  File: {match.file_path}")
@@ -288,7 +286,7 @@ class SecretScanner:
                 report.append("")
         
         # Recommendations
-        report.append("🛡️  SECURITY RECOMMENDATIONS")
+        report.append("  SECURITY RECOMMENDATIONS")
         report.append("-" * 30)
         report.append("1. Move all secrets to environment variables")
         report.append("2. Use Azure Key Vault for production secrets")
@@ -301,7 +299,7 @@ class SecretScanner:
         # Files with secrets
         unique_files = set(match.file_path for match in matches)
         if unique_files:
-            report.append("📁 FILES CONTAINING POTENTIAL SECRETS")
+            report.append(" FILES CONTAINING POTENTIAL SECRETS")
             report.append("-" * 40)
             for file_path in sorted(unique_files):
                 file_matches = [m for m in matches if m.file_path == file_path]
@@ -343,7 +341,7 @@ def main():
     scanner = SecretScanner()
     scan_path = Path(args.path).resolve()
     
-    print(f"🔍 Scanning {scan_path} for secrets and API keys...")
+    print(f" Scanning {scan_path} for secrets and API keys...")
     matches = scanner.scan_directory(scan_path)
     
     if args.high_only:

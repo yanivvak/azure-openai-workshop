@@ -2,15 +2,15 @@
 
 A comprehensive hands-on workshop for building AI applications with Azure AI Foundry. Learn to deploy models, implement tracing & observability, and create intelligent agent-based applications.
 
-## ⚡ Quick Start (5 Minutes)
+## Quick Start (5 Minutes)
 
 **Want to jump straight to enterprise security analytics?**
 
-📖 **[Follow the Quick Start Guide →](QUICK_START.md)**
+**[Follow the Quick Start Guide →](QUICK_START.md)**
 
 3 simple commands to deploy Azure Data Explorer and generate 120+ realistic security test scenarios with AI analysis!
 
-## 📚 What You'll Learn
+## What You'll Learn
 
 - Deploy and test Azure OpenAI models
 - Implement monitoring and tracing for AI applications  
@@ -18,7 +18,7 @@ A comprehensive hands-on workshop for building AI applications with Azure AI Fou
 - Work with Azure AI Foundry SDK
 - **NEW:** Enterprise-scale security analytics with Azure Data Explorer
 
-## 🚀 Prerequisites
+## Prerequisites
 
 Before starting, ensure you have:
 
@@ -49,7 +49,7 @@ az login
 az account show
 ```
 
-## 🏁 Getting Started
+## Getting Started
 
 ### Step 1: Clone and Setup Environment
 
@@ -129,7 +129,7 @@ jupyter lab
 # Or work directly in VS Code with the Python extension
 ```
 
-## 📚 Workshop Notebooks
+## Workshop Notebooks
 
 | Notebook | Topic | Description |
 |----------|-------|-------------|
@@ -140,7 +140,7 @@ jupyter lab
 | `05-agents_tracing.ipynb` | **Advanced Tracing** | Advanced tracing techniques for agents |
 | `06-fine_tuning.ipynb` | **Fine-tuning** | Custom model fine-tuning with Azure OpenAI |
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Validate Your Setup
 
@@ -172,7 +172,7 @@ echo "Deployment: $AZURE_OPENAI_DEPLOYMENT_NAME"
 echo "API Version: $AZURE_OPENAI_API_VERSION"
 ```
 
-## 🔧 Advanced Configuration
+## Advanced Configuration
 
 ### Adding Dependencies
 
@@ -195,16 +195,16 @@ The workshop includes all necessary packages:
 - **Data & Analysis**: `pandas`, `numpy`, `matplotlib`
 - **Jupyter**: `jupyter`, `ipykernel`
 
-## 📖 Additional Resources
+## Additional Resources
 
 - [Azure AI Foundry Documentation](https://learn.microsoft.com/azure/ai-foundry/)
 - [Infrastructure Setup Guide](./infrastructure/README.md)
 - [Azure OpenAI Service Documentation](https://learn.microsoft.com/azure/ai-services/openai/)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit issues and enhancement requests.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

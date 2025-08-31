@@ -1,15 +1,15 @@
-# ADX Error Troubleshooting Guide
+# ADX ❌ Error Troubleshooting Guide
 
-## 🚨 Current Error
-`Unknown error occurred. CID: UKN61546fcf-2a39-4dd6-b3db-c5241681d3fc`
+##  Current ❌ Error
+`Unknown ❌ error occurred. CID: UKN61546fcf-2a39-4dd6-b3db-c5241681d3fc`
 
-This error typically occurs when:
+This ❌ error typically occurs when:
 1. Running too many commands at once
 2. Syntax issues in KQL commands
 3. Permission issues
 4. Database connection problems
 
-## 🔧 Step-by-Step Resolution
+##  Step-by-Step Resolution
 
 ### Method 1: Run Commands One at a Time
 
@@ -48,15 +48,15 @@ Test if you have table creation permissions:
 .show principal access
 ```
 
-## 🔍 Common Issues and Solutions
+##  Common Issues and Solutions
 
 ### Issue 1: Not Connected to Correct Database
 **Solution**: Make sure you're connected to `TracingDB` database in your cluster
 
-### Issue 2: Permission Denied
+### Issue 2: ❌ ❌ Permission Denied
 **Solution**: You need `Database Admin` or `Database User` permissions
 
-### Issue 3: Syntax Errors
+### Issue 3: ❌ Syntax Errors
 **Solution**: Use the step-by-step files which contain single commands
 
 ### Issue 4: Browser/Connection Issues
@@ -66,7 +66,7 @@ Test if you have table creation permissions:
 - Try in incognito/private mode
 - Use a different browser
 
-## 🎯 Minimal Test Commands
+##  Minimal Test Commands
 
 If everything else fails, try these ultra-simple commands one at a time:
 
@@ -90,14 +90,14 @@ print current_database()
 .drop table TestTable
 ```
 
-## 📞 If Still Having Issues
+##  If Still Having Issues
 
 1. **Check Azure Portal**: Go to your ADX cluster in Azure Portal and check if it's running
 2. **Check cluster status**: Look for any maintenance or issues
 3. **Try Azure CLI**: Use `az kusto` commands as alternative
-4. **Contact Azure Support**: Use the error CID for reference
+4. **Contact Azure Support**: Use the ❌ error CID for reference
 
-## 🔄 Alternative: Use Azure CLI
+##  Alternative: Use Azure CLI
 
 If the Web UI continues to fail, try using Azure CLI:
 

@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🔍 Validating Azure Data Explorer Setup...${NC}"
+echo -e "${BLUE} Validating Azure Data Explorer Setup...${NC}"
 echo ""
 
 # Test variables
@@ -29,11 +29,11 @@ run_test() {
     ((TESTS_TOTAL++))
     
     if eval "$test_command"; then
-        echo -e "${GREEN}✅ PASSED: $test_name${NC}"
+        echo -e "${GREEN} PASSED: $test_name${NC}"
         ((TESTS_PASSED++))
         return 0
     else
-        echo -e "${RED}❌ FAILED: $test_name${NC}"
+        echo -e "${RED} ❌ FAILED: $test_name${NC}"
         return 1
     fi
 }
@@ -54,7 +54,7 @@ run_test "TracingDB Database" 'az kusto database show --cluster-name "adx-viytdz
 run_test "Environment File" "test -f ../../.env"
 
 # Test 6: Schema file exists
-run_test "Schema File" "test -f ../schema/complete-schema-setup.kql"
+run_test "Schema File" "test -f ../schema/✅ complete-schema-setup.kql"
 
 # Test 7: Tables exist (using Azure CLI)
 echo -e "${YELLOW}Testing: Database Tables${NC}"
@@ -63,18 +63,18 @@ echo -e "${YELLOW}Testing: Database Tables${NC}"
 tables_exist=true
 for table in "OTelTraces" "SecurityTraces" "LLMInteractions"; do
     if ! az kusto table show --cluster-name "adx-viytdz" --database-name "TracingDB" --table-name "$table" --resource-group "rg-adx-viytdz" > /dev/null 2>&1; then
-        echo -e "${RED}  ❌ Table '$table' not found${NC}"
+        echo -e "${RED}   Table '$table' not found${NC}"
         tables_exist=false
     else
-        echo -e "${GREEN}  ✅ Table '$table' exists${NC}"
+        echo -e "${GREEN}   Table '$table' exists${NC}"
     fi
 done
 
 if $tables_exist; then
-    echo -e "${GREEN}✅ PASSED: Database Tables${NC}"
+    echo -e "${GREEN} PASSED: Database Tables${NC}"
     ((TESTS_PASSED++))
 else
-    echo -e "${RED}❌ FAILED: Database Tables${NC}"
+    echo -e "${RED} ❌ FAILED: Database Tables${NC}"
 fi
 
 # Test 8: EventHub namespace exists
@@ -84,31 +84,31 @@ run_test "EventHub Namespace" 'az eventhubs namespace show --name "tracing-eh-vi
 run_test "Storage Account" 'az storage account show --name "adxstorageviytdz" --resource-group "rg-adx-viytdz" > /dev/null 2>&1'
 
 echo ""
-echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
+echo -e "${BLUE}${NC}"
 echo -e "${BLUE}  VALIDATION SUMMARY${NC}"
-echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
+echo -e "${BLUE}${NC}"
 echo ""
 
 if [ $TESTS_PASSED -eq $TESTS_TOTAL ]; then
-    echo -e "${GREEN}🎉 ALL TESTS PASSED! ($TESTS_PASSED/$TESTS_TOTAL)${NC}"
+    echo -e "${GREEN} ALL TESTS PASSED! ($TESTS_PASSED/$TESTS_TOTAL)${NC}"
     echo ""
-    echo -e "${GREEN}✅ Azure Data Explorer setup is working correctly${NC}"
+    echo -e "${GREEN} Azure Data Explorer setup is working correctly${NC}"
     echo ""
-    echo -e "${BLUE}🔗 Ready to use:${NC}"
+    echo -e "${BLUE} Ready to use:${NC}"
     echo -e "   • Web UI: ${YELLOW}https://dataexplorer.azure.com/clusters/adx-viytdz.eastus/databases/TracingDB${NC}"
     echo -e "   • Cluster: ${YELLOW}https://adx-viytdz.eastus.kusto.windows.net${NC}"
     echo -e "   • Database: ${YELLOW}TracingDB${NC}"
     echo ""
-    echo -e "${BLUE}📝 Next steps:${NC}"
+    echo -e "${BLUE} Next steps:${NC}"
     echo -e "   1. Load environment: ${YELLOW}source ../../.env${NC}"
     echo -e "   2. Run security notebook: ${YELLOW}../notebooks/03-security-pentesting-adx.ipynb${NC}"
     echo ""
     exit 0
 else
-    echo -e "${RED}❌ SOME TESTS FAILED ($TESTS_PASSED/$TESTS_TOTAL passed)${NC}"
+    echo -e "${RED} SOME TESTS ❌ FAILED ($TESTS_PASSED/$TESTS_TOTAL passed)${NC}"
     echo ""
-    echo -e "${YELLOW}🔧 Possible fixes:${NC}"
-    echo -e "   • Run the complete setup: ${YELLOW}./deploy-adx-complete.sh${NC}"
+    echo -e "${YELLOW} Possible fixes:${NC}"
+    echo -e "   • Run the ✅ complete setup: ✅ ${YELLOW}./deploy-adx-✅ complete.sh${NC}"
     echo -e "   • Check Azure CLI login: ${YELLOW}az login${NC}"
     echo -e "   • Manually setup schema: ${YELLOW}./setup-adx-schema.sh${NC}"
     echo ""

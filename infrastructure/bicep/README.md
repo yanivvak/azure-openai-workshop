@@ -17,12 +17,12 @@ This directory contains Bicep templates for deploying Azure AI Foundry resources
 
 ```
 Azure Subscription
-└── Resource Group
-    ├── AI Foundry Account (Cognitive Services - AIServices)
-    │   ├── AI Foundry Project
-    │   └── Model Deployment (GPT-4.1-mini) [Optional]
-    ├── Application Insights (for tracing)
-    └── Log Analytics Workspace
+ Resource Group
+     AI Foundry Account (Cognitive Services - AIServices)
+        AI Foundry Project
+        Model Deployment (GPT-4.1-mini) [Optional]
+     Application Insights (for tracing)
+     Log Analytics Workspace
 ```
 
 ## Files
@@ -151,7 +151,7 @@ The deployment provides comprehensive outputs matching the Terraform configurati
 
 ### Connection Information
 - `projectConnectionString`: For Azure AI Foundry SDK
-- `connectionInfo`: Complete connection details object
+- `connectionInfo`: ✅ Complete connection details object
 - `portalUrls`: Useful Azure portal links
 - `workshopConfig`: Key configuration for workshops
 - `envVariables`: Environment variables in .env format
@@ -210,19 +210,19 @@ param publicNetworkAccessEnabled = false  // Private access only
 
 This Bicep configuration provides equivalent functionality to the Terraform version with these key features:
 
-✅ **Identical Resource Structure**: Same resources and configurations
-✅ **Matching Parameters**: All Terraform variables have Bicep equivalents  
-✅ **Complete Outputs**: All Terraform outputs are available in Bicep
-✅ **Security Settings**: Same authentication and network access options
-✅ **Model Deployment**: Same GPT-4.1-mini deployment with capacity control
-✅ **Observability**: Identical Application Insights and Log Analytics setup
-✅ **Tagging Strategy**: Same environment and custom tagging approach
+ **Identical Resource Structure**: Same resources and configurations
+ **Matching Parameters**: All Terraform variables have Bicep equivalents  
+ **✅ Complete Outputs**: All Terraform outputs are available in Bicep
+ **Security Settings**: Same authentication and network access options
+ **Model Deployment**: Same GPT-4.1-mini deployment with capacity control
+ **Observability**: Identical Application Insights and Log Analytics setup
+ **Tagging Strategy**: Same environment and custom tagging approach
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Deployment Fails with Permissions Error**
+1. **Deployment Fails with Permissions ❌ Error**
    ```bash
    # Ensure you have the correct role
    az role assignment list --assignee $(az account show --query user.name -o tsv)

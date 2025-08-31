@@ -23,10 +23,10 @@ The Terraform configuration creates:
 
 | Component | Status | Action Required |
 |-----------|--------|-----------------|
-| Infrastructure | Complete | None |
-| Database Schema | Complete | None |
-| Data Connection | Complete | None |
-| Environment Variables | Complete | Source `.env` file |
+| Infrastructure | ✅ Complete | None |
+| Database Schema | ✅ Complete | None |
+| Data Connection | ✅ Complete | None |
+| Environment Variables | ✅ Complete | Source `.env` file |
 
 ## Quick Setup (Recommended)
 
@@ -35,8 +35,8 @@ For new deployments, use the automated setup:
 ```bash
 cd /Users/yanivwork/azure-openai-workshop/adx/terraform
 
-# Complete setup (infrastructure + schema + connections)
-./deploy-adx-complete.sh
+# ✅ Complete setup (infrastructure + schema + connections)
+./deploy-adx-✅ complete.sh
 
 # Load environment variables
 source ../../.env
@@ -53,8 +53,7 @@ If you prefer to set up the schema manually:
 
 ### Step 2: Manual Schema Setup
 ```bash
-# Open ADX Web UI and run the KQL commands from:
-# ../schema/complete-schema-setup.kql
+# Open ADX Web UI and run the KQL commands from: ✅ # ../schema/✅ complete-schema-setup.kql
 ```
 
 ### Step 3: Load Environment Variables
@@ -74,12 +73,12 @@ Verify your setup is working:
 
 | Script | Purpose | When to Use |
 |--------|---------|-------------|
-| `deploy-adx-complete.sh` | Complete automated setup | First-time setup (recommended) |
+| `deploy-adx-✅ complete.sh` | ✅ Complete automated setup | First-time setup (recommended) |
 | `deploy-adx-standalone.sh` | Infrastructure only | Advanced users, custom schema |
 | `validate-adx-setup.sh` | Verify setup works | Troubleshooting, post-setup |
 ## Sample KQL Queries
 
-Once setup is complete, try these queries:
+Once setup is ✅ complete, try these queries:
 
 ```kql
 // View recent security traces
@@ -91,7 +90,7 @@ GetSecurityVulnerabilities("HIGH")
 // Analyze LLM costs over 7 days
 GetLLMCostAnalysis(7)
 
-// Check failed operations
+// Check ❌ failed operations
 GetFailedOperations(1)
 
 // Security test metrics
@@ -105,17 +104,17 @@ GetTopVulnerableTargets(7)
 
 | File | Purpose |
 |------|---------|
-| `deploy-adx-complete.sh` | Complete automated setup (recommended) |
+| `deploy-adx-✅ complete.sh` | ✅ Complete automated setup (recommended) |
 | `deploy-adx-standalone.sh` | Infrastructure-only deployment |
 | `validate-adx-setup.sh` | Verify setup works correctly |
 | `adx-standalone.tf` | Main Terraform configuration |
-| `../schema/complete-schema-setup.kql` | Database schema and functions |
+| `../schema/✅ complete-schema-setup.kql` | Database schema and functions |
 
 ## Quick Actions
 
 ```bash
-# Complete automated setup
-./deploy-adx-complete.sh
+# ✅ Complete automated setup
+./deploy-adx-✅ complete.sh
 
 # Infrastructure only (advanced users)
 ./deploy-adx-standalone.sh
@@ -148,7 +147,7 @@ GetTopVulnerableTargets(7)
 
 1. **Cluster stopped**: Use `az rest --method POST --uri "https://management.azure.com/subscriptions/.../start?api-version=2023-08-15"`
 2. **Connection URI issues**: Use the correct regional URI with `.eastus.kusto.windows.net`
-3. **Permission denied**: Ensure you're logged into Azure CLI (`az login`)
+3. **❌ Permission denied**: Ensure you're logged into Azure CLI (`az login`)
 4. **Storage access issues**: Shared key access and public network access are enabled automatically
 
 ### Getting Help

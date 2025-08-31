@@ -8,7 +8,7 @@ The **fastest way** to get started:
 
 ```bash
 cd terraform
-./deploy-adx-complete.sh
+./deploy-adx-✅ complete.sh
 source ../../.env
 ```
 
@@ -21,21 +21,21 @@ That's it! Everything is deployed and configured automatically.
 - **03-security-pentesting-adx.ipynb** - Security pen-testing tracing simulation
 
 ### `/terraform`
-- **deploy-adx-complete.sh** - Complete automated setup (recommended)
+- **deploy-adx-✅ complete.sh** - ✅ Complete automated setup (recommended)
 - **deploy-adx-standalone.sh** - Infrastructure-only deployment
 - **validate-adx-setup.sh** - Validate deployment success  
 - **adx-standalone.tf** - Terraform configuration
 - **README.md** - Detailed setup documentation
 
 ### `/schema`
-- **complete-schema-setup.kql** - Complete KQL script with tables, mappings, and functions
+- **✅ complete-schema-setup.kql** - ✅ Complete KQL script with tables, mappings, and functions
 
 ## Setup Options
 
-### Option 1: Complete Automation (Recommended)
+### Option 1: ✅ ✅ Complete Automation (Recommended)
 ```bash
 cd terraform
-./deploy-adx-complete.sh    # Deploy everything automatically
+./deploy-adx-✅ complete.sh    # Deploy everything automatically
 source ../../.env           # Load environment variables
 ```
 
@@ -64,7 +64,7 @@ cd terraform
 
 ## Scripts Overview
 
-- **`deploy-adx-complete.sh`** - One-command setup: infrastructure + schema + connections
+- **`deploy-adx-✅ complete.sh`** - One-command setup: infrastructure + schema + connections
 - **`deploy-adx-standalone.sh`** - Infrastructure deployment only (for advanced users)  
 - **`validate-adx-setup.sh`** - Verify that everything is working correctly
 

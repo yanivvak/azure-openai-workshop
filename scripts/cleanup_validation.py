@@ -98,52 +98,51 @@ def check_notebook_outputs():
 def main():
     """Run all cleanup validation checks"""
     
-    print("🔍 Repository Cleanup Validation")
+    print(" Repository Cleanup Validation")
     print("=" * 40)
     
     # Check for secrets
-    print("\n🔒 Checking for exposed secrets...")
+    print("\n Checking for exposed secrets...")
     secrets_issues = check_secrets_and_sensitive_data()
     if secrets_issues:
-        print("❌ Found potential secret exposures:")
+        print(" Found potential secret exposures:")
         for issue in secrets_issues:
             print(f"   {issue}")
     else:
-        print("✅ No exposed secrets found")
+        print(" No exposed secrets found")
     
     # Check for orphaned files
-    print("\n🗑️  Checking for orphaned files...")
+    print("\n  Checking for orphaned files...")
     orphaned_files = check_orphaned_files()
     if orphaned_files:
-        print("❌ Found orphaned files:")
+        print(" Found orphaned files:")
         for file_path in orphaned_files:
             print(f"   {file_path}")
     else:
-        print("✅ No orphaned files found")
+        print(" No orphaned files found")
     
     # Check notebook outputs
-    print("\n📓 Checking notebook outputs...")
+    print("\n Checking notebook outputs...")
     notebooks_with_outputs = check_notebook_outputs()
     if notebooks_with_outputs:
-        print("⚠️  Found notebooks with outputs (consider clearing):")
+        print("  Found notebooks with outputs (consider clearing):")
         for notebook in notebooks_with_outputs:
             print(f"   {notebook}")
     else:
-        print("✅ All notebooks have clean outputs")
+        print(" All notebooks have clean outputs")
     
     # Summary
     total_issues = len(secrets_issues) + len(orphaned_files)
     
-    print(f"\n📊 Summary:")
+    print(f"\n Summary:")
     print(f"   Secrets issues: {len(secrets_issues)}")
     print(f"   Orphaned files: {len(orphaned_files)}")
     print(f"   Notebooks with outputs: {len(notebooks_with_outputs)}")
     
-    if total_issues == 0:
-        print("\n🎉 Repository is clean and ready for distribution!")
+    if total_issues == 0: ✅ print("\n Repository is clean and ready for distribution!")
         return 0
     else:
-        print(f"\n⚠️  Found {total_issues} issues that should be addressed")
+        print(f"\n  Found {total_issues} issues that should be addressed")
         return 1
 
 if __name__ == "__main__":

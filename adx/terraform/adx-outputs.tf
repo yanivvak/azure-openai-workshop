@@ -124,7 +124,7 @@ output "quick_start_info" {
   description = "Quick start information for connecting to ADX"
   value = <<-EOT
 
-🚀 Azure Data Explorer (ADX) Setup Complete!
+Azure Data Explorer (ADX) Setup Complete!
 
 Cluster Information:
 ├── Cluster Name: ${azurerm_kusto_cluster.adx_cluster.name}
@@ -132,16 +132,16 @@ Cluster Information:
 ├── Database Name: ${azurerm_kusto_database.tracing_db.name}
 └── Resource Group: ${azurerm_resource_group.adx_rg.name}
 
-🔗 Quick Access Links:
+Quick Access Links:
 ├── ADX Web UI: https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}
 └── Azure Portal: https://portal.azure.com/#resource/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.adx_rg.name}/providers/Microsoft.Kusto/clusters/${azurerm_kusto_cluster.adx_cluster.name}
 
-📊 Security Tables Created:
+Security Tables Created:
 ├── OTelTraces: OpenTelemetry trace data
 ├── SecurityTraces: Security test results
 └── LLMInteractions: LLM usage and cost data
 
-🔍 Sample KQL Queries:
+Sample KQL Queries:
 ├── List all security traces: SecurityTraces | take 10
 ├── Get recent vulnerabilities: GetSecurityVulnerabilities("HIGH")
 ├── Analyze LLM costs: GetLLMCostAnalysis(7)
@@ -149,20 +149,20 @@ Cluster Information:
 ├── Security test metrics: GetSecurityTestMetrics(7)
 └── Top vulnerable targets: GetTopVulnerableTargets(7)
 
-📝 Next Steps:
+Next Steps:
 1. Run: terraform output env_variables > .env
 2. Execute the pen-testing tracing notebook
 3. Generate 100+ sample traces
 4. Use the provided KQL queries for analysis
 5. Set up dashboards in Azure portal
 
-💰 Cost Optimization:
+Cost Optimization:
 ├── Auto-stop enabled: ${var.enable_adx_auto_stop}
 ├── SKU: ${var.adx_sku_name}
 ├── Capacity: ${var.adx_capacity} instance(s)
 └── Hot cache period: ${var.adx_hot_cache_period}
 
-🔐 Authentication:
+Authentication:
 Use Azure CLI: az login
 Or use managed identity for automated access
 EOT

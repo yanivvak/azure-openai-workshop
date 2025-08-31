@@ -2,7 +2,7 @@
 
 This directory contains Infrastructure as Code (IaC) templates for deploying Azure AI Foundry resources using both **Bicep** and **Terraform**.
 
-## 🚀 Quick Start
+## Quick Start
 
 Choose your preferred tool:
 
@@ -18,27 +18,27 @@ cd terraform
 ./deploy.sh
 ```
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 infrastructure/
-├── bicep/                    # Azure Bicep templates
-│   ├── main.bicep           # Main deployment template
-│   ├── modules/
-│   │   └── foundry.bicep    # Foundry resources module
-│   ├── deploy.sh            # Deployment script
-│   └── README.md            # Bicep-specific documentation
-├── terraform/               # Terraform configuration
-│   ├── main.tf              # Main Terraform configuration
-│   ├── variables.tf         # Variable definitions
-│   ├── outputs.tf           # Output definitions
-│   ├── terraform.tfvars.example  # Example variables
-│   ├── deploy.sh            # Deployment script
-│   └── README.md            # Terraform-specific documentation
-└── README.md               # This file
+ bicep/                    # Azure Bicep templates
+    main.bicep           # Main deployment template
+    modules/
+       foundry.bicep    # Foundry resources module
+    deploy.sh            # Deployment script
+    README.md            # Bicep-specific documentation
+ terraform/               # Terraform configuration
+    main.tf              # Main Terraform configuration
+    variables.tf         # Variable definitions
+    outputs.tf           # Output definitions
+    terraform.tfvars.example  # Example variables
+    deploy.sh            # Deployment script
+    README.md            # Terraform-specific documentation
+ README.md               # This file
 ```
 
-## 🏗️ What Gets Deployed
+## What Gets Deployed
 
 Both templates deploy the following Azure resources:
 
@@ -50,7 +50,7 @@ Both templates deploy the following Azure resources:
 ### Optional Resources
 - **GPT-4.1-mini Model Deployment** - Ready-to-use language model (enabled by default)
 
-## 🔧 Prerequisites
+## Prerequisites
 
 ### Common Requirements
 - Azure CLI installed and authenticated
@@ -64,7 +64,7 @@ Both templates deploy the following Azure resources:
 - Terraform >= 1.0
 - AzureRM provider
 
-## ⚙️ Configuration Options
+## Configuration Options
 
 ### Key Parameters
 
@@ -76,23 +76,23 @@ Both templates deploy the following Azure resources:
 | Deploy Model | Include GPT-4.1-mini deployment | true | Requires standard SKU |
 | Disable Local Auth | Enhanced security | true | Recommended for production |
 
-## 🎯 Choosing Between Bicep and Terraform
+## Choosing Between Bicep and Terraform
 
 ### Use **Bicep** if:
-- ✅ Azure-only deployment
-- ✅ Want native Azure integration
-- ✅ Prefer Azure-first tooling
-- ✅ Team is Azure-focused
-- ✅ Want automatic portal integration
+- Azure-only deployment
+- Want native Azure integration
+- Prefer Azure-first tooling
+- Team is Azure-focused
+- Want automatic portal integration
 
 ### Use **Terraform** if:
-- ✅ Multi-cloud strategy
-- ✅ Existing Terraform workflows
-- ✅ Need advanced state management
-- ✅ Want provider ecosystem
-- ✅ Team uses HashiCorp tools
+- Multi-cloud strategy
+- Existing Terraform workflows
+- Need advanced state management
+- Want provider ecosystem
+- Team uses HashiCorp tools
 
-## 📋 Deployment Steps
+## Deployment Steps
 
 ### 1. Choose Your Tool
 ```bash
@@ -116,7 +116,7 @@ Both tools provide example configurations and sensible defaults.
 - **Azure AI Foundry Portal**: https://ai.azure.com
 - **Azure Portal**: Check outputs for direct links
 
-## 🔍 Post-Deployment
+## Post-Deployment
 
 ### Verify Deployment
 1. Check the Azure portal for created resources
@@ -132,7 +132,7 @@ az deployment sub show --name <deployment-name> --query properties.outputs
 terraform output
 ```
 
-## 🧹 Cleanup
+## Cleanup
 
 ### Remove All Resources
 ```bash
@@ -143,7 +143,7 @@ az group delete --name <resource-group-name> --yes --no-wait
 terraform destroy
 ```
 
-## 🔐 Security Best Practices
+## Security Best Practices
 
 1. **Disable Local Authentication** - Use managed identities or Azure AD
 2. **Network Security** - Configure private endpoints for production
@@ -151,7 +151,7 @@ terraform destroy
 4. **Key Management** - Rotate keys regularly if using key-based auth
 5. **Monitoring** - Enable Azure Monitor and diagnostic logs
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -160,7 +160,7 @@ terraform destroy
 | Authentication errors | Run `az login` and verify subscription |
 | Naming conflicts | AI Foundry names must be globally unique |
 | Quota exceeded | Request quota increase or change region |
-| Permission denied | Verify Contributor role on subscription |
+| ❌ Permission denied | Verify Contributor role on subscription |
 | Model deployment fails | Ensure S0 SKU and region supports models |
 
 ### Debug Commands
@@ -175,17 +175,17 @@ az account list-locations --output table
 az provider show --namespace Microsoft.CognitiveServices
 ```
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Azure AI Foundry Documentation](https://learn.microsoft.com/azure/ai-foundry/)
 - [Azure Bicep Documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
 - [Terraform Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 - [Azure AI Services](https://learn.microsoft.com/azure/ai-services/)
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to submit issues and enhancement requests!
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

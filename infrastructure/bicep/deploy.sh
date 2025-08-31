@@ -11,18 +11,18 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}🚀 Azure AI Foundry Deployment Script${NC}"
+echo -e "${GREEN} Azure AI Foundry Deployment Script${NC}"
 echo "=========================================="
 
 # Check if Azure CLI is installed
 if ! command -v az &> /dev/null; then
-    echo -e "${RED}❌ Azure CLI is not installed. Please install it first.${NC}"
+    echo -e "${RED} Azure CLI is not installed. Please install it first.${NC}"
     exit 1
 fi
 
 # Check if user is logged in
 if ! az account show &> /dev/null; then
-    echo -e "${YELLOW}⚠️ Please log in to Azure CLI first${NC}"
+    echo -e "${YELLOW} Please log in to Azure CLI first${NC}"
     az login
 fi
 
@@ -30,7 +30,7 @@ fi
 SUBSCRIPTION_ID=$(az account show --query id --output tsv)
 SUBSCRIPTION_NAME=$(az account show --query name --output tsv)
 
-echo -e "${GREEN}✅ Using subscription: ${SUBSCRIPTION_NAME} (${SUBSCRIPTION_ID})${NC}"
+echo -e "${GREEN} Using subscription: ${SUBSCRIPTION_NAME} (${SUBSCRIPTION_ID})${NC}"
 
 # Set default values (matching Terraform defaults)
 DEFAULT_LOCATION="Sweden Central"
@@ -63,7 +63,7 @@ AI_FOUNDRY_NAME="${FOUNDRY_PREFIX}-${UNIQUE_ID}"
 PROJECT_NAME="${AI_FOUNDRY_NAME}-project"
 
 echo ""
-echo -e "${YELLOW}📋 Deployment Configuration:${NC}"
+echo -e "${YELLOW} Deployment Configuration:${NC}"
 echo "  Location: ${LOCATION}"
 echo "  Environment: ${ENVIRONMENT}"
 echo "  Resource Group: ${RESOURCE_GROUP_NAME}"
@@ -110,7 +110,7 @@ if [[ ! $CONFIRM =~ ^[Yy]$ ]]; then
 fi
 
 echo ""
-echo -e "${YELLOW}🔨 Starting deployment...${NC}"
+echo -e "${YELLOW} Starting deployment...${NC}"
 
 # Create deployment name
 DEPLOYMENT_NAME="foundry-deployment-${TIMESTAMP}"
@@ -157,9 +157,9 @@ fi
 
 if [ $? -eq 0 ]; then
     echo ""
-    echo -e "${GREEN}✅ Deployment completed successfully!${NC}"
+    echo -e "${GREEN} Deployment completed ✅ successfully!${NC}"
     echo ""
-    echo -e "${YELLOW}📊 Deployment Details:${NC}"
+    echo -e "${YELLOW} Deployment Details:${NC}"
     
     # Get outputs
     OUTPUTS=$(az deployment sub show --name "${DEPLOYMENT_NAME}" --query properties.outputs --output json)
@@ -174,7 +174,7 @@ if [ $? -eq 0 ]; then
         
         # Output environment variables if available (secure outputs won't show in JSON)
         echo ""
-        echo -e "${YELLOW}🔧 Environment Variables (.env format):${NC}"
+        echo -e "${YELLOW} Environment Variables (.env format):${NC}"
         echo "# Copy these values to your .env file:"
         echo ""
         
@@ -198,7 +198,7 @@ if [ $? -eq 0 ]; then
         # Save to .env file in project root
         ENV_FILE="../../.env"
         echo ""
-        echo -e "${YELLOW}💾 Saving environment variables to ${ENV_FILE}...${NC}"
+        echo -e "${YELLOW} Saving environment variables to ${ENV_FILE}...${NC}"
         
         cat > "${ENV_FILE}" << EOF
 # Azure AI Foundry Workshop Environment Variables
@@ -225,21 +225,21 @@ PROJECT_ENDPOINT=${PROJECT_ENDPOINT}
 # 2. For Entra ID authentication (recommended): Keep AZURE_OPENAI_API_KEY commented
 EOF
         
-        echo -e "${GREEN}✅ Environment variables saved to ${ENV_FILE}${NC}"
+        echo -e "${GREEN} Environment variables saved to ${ENV_FILE}${NC}"
     fi
     
     echo ""
-    echo -e "${GREEN}🌐 Access your AI Foundry:${NC}"
+    echo -e "${GREEN} Access your AI Foundry:${NC}"
     echo "  Portal: https://ai.azure.com"
     echo "  Resource Group Portal: https://portal.azure.com/#@/resource/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP_NAME}/overview"
     echo ""
-    echo -e "${YELLOW}💾 Save outputs to file:${NC}"
+    echo -e "${YELLOW} Save outputs to file:${NC}"
     echo "  az deployment sub show --name \"${DEPLOYMENT_NAME}\" --query properties.outputs --output json > outputs.json"
     echo ""
-    echo -e "${YELLOW}🧹 To clean up resources later:${NC}"
+    echo -e "${YELLOW} To clean up resources later:${NC}"
     echo "  az group delete --name \"${RESOURCE_GROUP_NAME}\" --yes --no-wait"
     
 else
-    echo -e "${RED}❌ Deployment failed. Check the error messages above.${NC}"
+    echo -e "${RED} Deployment ❌ failed. Check the ❌ error messages above.${NC}"
     exit 1
 fi
