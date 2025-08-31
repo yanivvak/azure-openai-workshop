@@ -2,13 +2,39 @@
 
 A comprehensive hands-on workshop for building AI applications with Azure AI Foundry. Learn to deploy models, implement tracing & observability, and create intelligent agent-based applications.
 
-## Quick Start (5 Minutes)
+## Quick Start for ADX Security Analytics (5 Minutes)
 
 **Want to jump straight to enterprise security analytics?**
 
-**[Follow the Quick Start Guide →](QUICK_START.md)**
+### Step 1: Deploy Everything
+```bash
+cd adx/terraform
+./deploy-adx-complete.sh
+```
+**What this does:** Deploys Azure Data Explorer cluster, database, schema, and all connections automatically.
 
-3 simple commands to deploy Azure Data Explorer and generate 120+ realistic security test scenarios with AI analysis!
+### Step 2: Load Environment  
+```bash
+source ../../.env
+```
+**What this does:** Loads all configuration variables into your environment.
+
+### Step 3: Run the Security Notebook
+```bash
+# Open the notebook and run all cells
+adx/notebooks/03-security-pentesting-adx.ipynb
+```
+**What this does:** Generates 120+ realistic security tests with AI analysis and exports to ADX.
+
+### Success Criteria
+
+After completing the steps above, you should have:
+
+- ADX cluster running with TracingDB database
+- 3 tables with schema: SecurityTraces, LLMInteractions, OTelTraces  
+- 7 analytical functions for security queries
+- 120+ security test records with AI analysis
+- Ready-to-use KQL queries for insights
 
 ## What You'll Learn
 
@@ -129,7 +155,7 @@ jupyter lab
 # Or work directly in VS Code with the Python extension
 ```
 
-## Workshop Notebooks
+## Workshop Notebooks (Core Workshop)
 
 | Notebook | Topic | Description |
 |----------|-------|-------------|
@@ -139,6 +165,15 @@ jupyter lab
 | `04-agents.ipynb` | **Agent Applications** | Build intelligent agent-based applications |
 | `05-agents_tracing.ipynb` | **Advanced Tracing** | Advanced tracing techniques for agents |
 | `06-fine_tuning.ipynb` | **Fine-tuning** | Custom model fine-tuning with Azure OpenAI |
+
+## Azure Data Explorer (ADX) Integration
+
+For enterprise-scale security analytics and advanced monitoring, explore the ADX integration:
+
+- **Location**: [`adx/`](adx/) folder
+- **Notebook**: `adx/notebooks/03-security-pentesting-adx.ipynb`
+- **Documentation**: [ADX README](adx/README.md)
+- **Features**: Real-time analytics, cost tracking, security monitoring, and business intelligence
 
 ## Troubleshooting
 
