@@ -503,7 +503,7 @@ wheels = [
 [[package]]
 name = "azure-openai-workshop"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "azure-ai-agents" },
     { name = "azure-ai-evaluation" },

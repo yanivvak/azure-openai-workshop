@@ -66,10 +66,6 @@ agents = [
     # "autogen-agentchat>=0.2.0",  # Temporarily disabled due to dependency conflicts
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.uv]
 dev-dependencies = [
     "pytest>=7.0.0",
