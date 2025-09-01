@@ -79,8 +79,8 @@ check_prerequisites() {
     fi
     
     # Check if schema file exists
-    if [ ! -f "../schema/✅ complete-schema-setup.kql" ]; then
-        echo -e "${RED}Schema file not found: ✅ ../schema/✅ complete-schema-setup.kql${NC}"
+    if [ ! -f "../schema/complete-schema-setup.kql" ]; then
+        echo -e "${RED}Schema file not found: ../schema/complete-schema-setup.kql${NC}"
         ((errors++))
     else
         echo -e "${GREEN}Schema file found${NC}"

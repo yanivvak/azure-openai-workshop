@@ -1,5 +1,63 @@
 // Azure Data Explorer (ADX) Complete Schema Setup
-// Copy and paste this entire script into ADX Web UI and run all at once
+// Run this script in ADX Web UI to create tables, mappings, and functions
+
+// =============================================================================
+// CREATE TABLES FIRST
+// =============================================================================
+
+// Create OTelTraces table for OpenTelemetry data
+.create table OTelTraces (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    ParentSpanId: string,
+    OperationName: string,
+    ServiceName: string,
+    Duration: timespan,
+    StatusCode: string,
+    StatusMessage: string,
+    Attributes: dynamic,
+    Events: dynamic,
+    Links: dynamic,
+    Resource: dynamic,
+    InstrumentationScope: dynamic
+)
+
+// Create SecurityTraces table for security pen-testing data
+.create table SecurityTraces (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    TestType: string,
+    TestName: string,
+    Target: string,
+    Severity: string,
+    Status: string,
+    Duration: timespan,
+    Findings: dynamic,
+    Recommendations: dynamic,
+    TesterInfo: dynamic,
+    Environment: string
+)
+
+// Create LLMInteractions table for LLM usage tracking
+.create table LLMInteractions (
+    TimeStamp: datetime,
+    TraceId: string,
+    SpanId: string,
+    Model: string,
+    TokensUsed: int,
+    PromptTokens: int,
+    CompletionTokens: int,
+    Temperature: real,
+    MaxTokens: int,
+    PromptHash: string,
+    ResponseLength: int,
+    ProcessingTime: timespan,
+    Cost: real,
+    Success: bool,
+    ErrorMessage: string
+)
 
 // =============================================================================
 // CREATE JSON INGESTION MAPPINGS

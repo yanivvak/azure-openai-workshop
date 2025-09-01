@@ -1,114 +1,115 @@
-# ADX ❌ Error Troubleshooting Guide
+# ADX Schema Setup Troubleshooting Guide
 
-##  Current ❌ Error
-`Unknown ❌ error occurred. CID: UKN61546fcf-2a39-4dd6-b3db-c5241681d3fc`
+## Common Issues and Solutions
 
-This ❌ error typically occurs when:
-1. Running too many commands at once
-2. Syntax issues in KQL commands
-3. Permission issues
-4. Database connection problems
+### Issue 1: Azure CLI Script Execution Fails
 
-##  Step-by-Step Resolution
+**Symptoms**: 
+- `ScriptExecutionFailed` error during automated deployment
+- `Syntax error: SYN0001` messages
 
-### Method 1: Run Commands One at a Time
+**Solution**: Use manual setup via ADX Web UI
+1. Open the ADX Web UI (URL provided in deployment output)
+2. Copy and paste the complete contents of `complete-schema-setup.kql`
+3. Run the entire script at once (don't run line by line)
 
-1. **Start with Step 1**: Copy and paste contents of `step1-create-otel-table.kql`
-2. **Wait for success** before proceeding
-3. **Continue with Step 2**: Use `step2-create-security-table.kql`
-4. **Continue with Step 3**: Use `step3-create-llm-table.kql`
-5. **Test**: Run `test-tables-exist.kql` to verify
-6. **Add mappings**: Use `step4-create-mappings.kql`
+### Issue 2: "Table does not exist" Error
 
-### Method 2: Basic Connection Test
+**Symptoms**: 
+- Data connection creation fails
+- Mappings reference non-existent tables
 
-First, test if your connection is working:
+**Solution**: 
+The `complete-schema-setup.kql` file creates tables first, then mappings. This error occurs when:
+1. Tables weren't created successfully 
+2. Running commands out of order
 
-```kql
-print "Hello ADX"
+**Fix**: Run the complete schema script which creates tables before mappings.
+
+### Issue 3: Permission Denied
+
+**Symptoms**: 
+- Cannot create tables or functions
+- Access denied errors
+
+**Solution**: 
+1. Ensure you're logged into Azure: `az login`
+2. Check you have proper permissions on the ADX cluster
+3. You need at least `Database User` role
+
+### Issue 4: Connection Issues
+
+**Symptoms**: 
+- Cannot connect to ADX cluster
+- Timeout errors
+
+**Solution**: 
+1. Verify cluster is running: Check Azure Portal
+2. Check cluster URL is correct
+3. Try accessing via different browser/incognito mode
+
+## Manual Setup Process
+
+If automated setup fails, follow these steps:
+
+### Step 1: Open ADX Web UI
+```
+Use URL from .env file: ADX_WEB_UI
+Or: https://dataexplorer.azure.com/clusters/[cluster-name]/databases/TracingDB
 ```
 
-If this fails, there's a connection issue.
+### Step 2: Run Complete Schema
+1. Clear the query window
+2. Copy **all** contents from `complete-schema-setup.kql`
+3. Paste into query window
+4. Click "Run" to execute everything at once
 
-### Method 3: Check Database Context
+### Step 3: Verify Success
+```kql
+.show tables
+```
+Should show: `OTelTraces`, `SecurityTraces`, `LLMInteractions`
 
-Make sure you're connected to the right database:
+## Testing Commands
 
+### Basic Connection Test
+```kql
+print "ADX Connection Test Successful"
+```
+
+### Verify Database
 ```kql
 print database_name = current_database()
 ```
-
 Should return: `TracingDB`
 
-### Method 4: Check Permissions
-
-Test if you have table creation permissions:
-
+### Check Tables
 ```kql
-.show principal access
+.show tables
 ```
 
-##  Common Issues and Solutions
-
-### Issue 1: Not Connected to Correct Database
-**Solution**: Make sure you're connected to `TracingDB` database in your cluster
-
-### Issue 2: ❌ ❌ Permission Denied
-**Solution**: You need `Database Admin` or `Database User` permissions
-
-### Issue 3: ❌ Syntax Errors
-**Solution**: Use the step-by-step files which contain single commands
-
-### Issue 4: Browser/Connection Issues
-**Solutions**:
-- Refresh the ADX Web UI page
-- Clear browser cache
-- Try in incognito/private mode
-- Use a different browser
-
-##  Minimal Test Commands
-
-If everything else fails, try these ultra-simple commands one at a time:
-
-### Test 1: Basic print
+### Test Functions
 ```kql
-print "test"
+// Should show 7 functions
+.show functions
 ```
 
-### Test 2: Show current database
-```kql
-print current_database()
-```
+## Alternative: Step-by-Step Setup
 
-### Test 3: Create simple table
-```kql
-.create table TestTable (ID: int, Name: string)
-```
+If running the complete script fails, try individual files:
 
-### Test 4: Drop test table
-```kql
-.drop table TestTable
-```
+1. **Tables**: Use `step1-create-otel-table.kql`, `step2-create-security-table.kql`, `step3-create-llm-table.kql`
+2. **Mappings**: Use `step4-create-mappings.kql`
+3. **Test**: Use `test-tables-exist.kql`
 
-##  If Still Having Issues
+## Known Azure CLI Limitations
 
-1. **Check Azure Portal**: Go to your ADX cluster in Azure Portal and check if it's running
-2. **Check cluster status**: Look for any maintenance or issues
-3. **Try Azure CLI**: Use `az kusto` commands as alternative
-4. **Contact Azure Support**: Use the ❌ error CID for reference
+The Azure CLI `kusto` commands are experimental and may fail. This is a known issue, not a problem with your setup. The manual Web UI approach is more reliable.
 
-##  Alternative: Use Azure CLI
+## Getting Help
 
-If the Web UI continues to fail, try using Azure CLI:
-
-```bash
-# List tables
-az kusto query --cluster-name "https://adx-viytdz.eastus.kusto.windows.net" \
-               --database-name "TracingDB" \
-               --query ".show tables"
-
-# Create table via CLI
-az kusto query --cluster-name "https://adx-viytdz.eastus.kusto.windows.net" \
-               --database-name "TracingDB" \
-               --query-file "step1-create-otel-table.kql"
-```
+If issues persist:
+1. Check cluster status in Azure Portal
+2. Verify Azure subscription permissions
+3. Try the manual setup process above
+4. Use individual step files if the complete script fails

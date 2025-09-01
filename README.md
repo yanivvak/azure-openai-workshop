@@ -86,6 +86,7 @@ This deployment creates:
 
 1. **Copy environment template:**
    ```bash
+   cd ../../
    cp .env.example .env
    ```
 
@@ -110,16 +111,6 @@ This deployment creates:
    **Option B: API Key**
    - Get key from Azure Portal → AI Foundry resource → Keys and Endpoint
    - Add to `.env`: `AZURE_OPENAI_API_KEY=your-api-key`
-
-### Step 4: Start the Workshop
-
-Open the first notebook and begin:
-```bash
-# Launch Jupyter (if using Jupyter)
-jupyter lab
-
-# Or work directly in VS Code with the Python extension
-```
 
 ## Workshop Notebooks (Core Workshop)
 

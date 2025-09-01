@@ -35,11 +35,27 @@ For new deployments, use the automated setup:
 ```bash
 cd /Users/yanivwork/azure-openai-workshop/adx/terraform
 
+```bash
 # ✅ Complete setup (infrastructure + schema + connections)
-./deploy-adx-✅ complete.sh
+./deploy-adx-complete.sh
 
 # Load environment variables
 source ../../.env
+```
+
+## Advanced Setup (Infrastructure Only)
+
+If you prefer to set up the schema manually:
+
+### Step 1: Deploy Infrastructure Only
+```bash
+./deploy-adx-complete.sh
+```
+
+### Step 2: Manual Schema Setup (if needed)
+```bash
+# Open ADX Web UI and run the KQL commands from: ../schema/complete-schema-setup.kql
+```
 ```
 
 ## Advanced Setup (Infrastructure Only)
@@ -73,8 +89,7 @@ Verify your setup is working:
 
 | Script | Purpose | When to Use |
 |--------|---------|-------------|
-| `deploy-adx-✅ complete.sh` | ✅ Complete automated setup | First-time setup (recommended) |
-| `deploy-adx-standalone.sh` | Infrastructure only | Advanced users, custom schema |
+| `deploy-adx-complete.sh` | ✅ Complete automated setup | First-time setup (recommended) |
 | `validate-adx-setup.sh` | Verify setup works | Troubleshooting, post-setup |
 ## Sample KQL Queries
 
@@ -104,26 +119,19 @@ GetTopVulnerableTargets(7)
 
 | File | Purpose |
 |------|---------|
-| `deploy-adx-✅ complete.sh` | ✅ Complete automated setup (recommended) |
-| `deploy-adx-standalone.sh` | Infrastructure-only deployment |
+| `deploy-adx-complete.sh` | ✅ Complete automated setup (recommended) |
 | `validate-adx-setup.sh` | Verify setup works correctly |
-| `adx-standalone.tf` | Main Terraform configuration |
-| `../schema/✅ complete-schema-setup.kql` | Database schema and functions |
+| `main.tf` | Main Terraform configuration |
+| `../schema/complete-schema-setup.kql` | Database schema and functions |
 
 ## Quick Actions
 
 ```bash
 # ✅ Complete automated setup
-./deploy-adx-✅ complete.sh
-
-# Infrastructure only (advanced users)
-./deploy-adx-standalone.sh
+./deploy-adx-complete.sh
 
 # Verify setup works
 ./validate-adx-setup.sh
-
-# Destroy infrastructure (when done)
-./deploy-adx-standalone.sh --destroy
 ```
 
 ## Cost Management

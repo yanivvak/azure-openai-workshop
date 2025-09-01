@@ -42,16 +42,33 @@ The **fastest way** to get started:
 
 ```bash
 cd terraform
-./deploy-adx-✅ complete.sh
+./deploy-adx-complete.sh
 source ../../.env
 ```
 
 That's it! Everything is deployed and configured automatically.
 
+**Note:** If the schema setup fails during automated deployment, you can manually complete it by:
+1. Opening the ADX Web UI (link provided in deployment output)  
+2. Running the contents of `schema/complete-schema-setup.kql`
+
+## Manual Schema Setup (If Needed)
+
+If the automated schema setup fails, complete these steps:
+
+1. **Open ADX Web UI**: Use the URL from deployment output or `.env` file
+2. **Copy Schema Script**: Copy all contents from `schema/complete-schema-setup.kql`
+3. **Run in ADX**: Paste and execute the entire script in the ADX query editor
+4. **Verify**: Run `.show tables` to confirm 3 tables were created
+
+The schema script creates:
+- **3 Tables**: OTelTraces, SecurityTraces, LLMInteractions
+- **3 JSON Mappings**: For automated data ingestion  
+- **7 Functions**: For security analytics queries
+
 ## Folder Structure
 
 ### `/notebooks`
-- **02-foundry-tracing adx.ipynb** - Azure AI Foundry tracing with ADX integration
 - **03-security-pentesting-adx.ipynb** - Security pen-testing tracing simulation
 
 ### `/terraform`
@@ -62,23 +79,23 @@ That's it! Everything is deployed and configured automatically.
 - **README.md** - Detailed setup documentation
 
 ### `/schema`
-- **✅ complete-schema-setup.kql** - ✅ Complete KQL script with tables, mappings, and functions
+- **complete-schema-setup.kql** - ✅ Complete KQL script with tables, mappings, and functions
 
 ## Setup Options
 
-### Option 1: ✅ ✅ Complete Automation (Recommended)
+### Option 1: ✅ Complete Automation (Recommended)
 ```bash
 cd terraform
-./deploy-adx-✅ complete.sh    # Deploy everything automatically
-source ../../.env           # Load environment variables
+./deploy-adx-complete.sh      # Deploy everything automatically
+source ../../.env             # Load environment variables
 ```
 
 ### Option 2: Infrastructure Only
 ```bash
 cd terraform
-./deploy-adx-standalone.sh  # Deploy infrastructure only  
-# Then manually set up schema using ADX Web UI
-source ../../.env           # Load environment variables
+./deploy-adx-complete.sh      # Deploy infrastructure (schema may need manual setup)  
+# Then manually set up schema using ADX Web UI if needed
+source ../../.env             # Load environment variables
 ```
 
 ### Option 3: Validation
@@ -98,8 +115,7 @@ cd terraform
 
 ## Scripts Overview
 
-- **`deploy-adx-✅ complete.sh`** - One-command setup: infrastructure + schema + connections
-- **`deploy-adx-standalone.sh`** - Infrastructure deployment only (for advanced users)  
+- **`deploy-adx-complete.sh`** - One-command setup: infrastructure + schema + connections
 - **`validate-adx-setup.sh`** - Verify that everything is working correctly
 
 ## What's Deployed
