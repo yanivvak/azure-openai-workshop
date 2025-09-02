@@ -115,8 +115,13 @@ deploy_infrastructure() {
     fi
     
     # Get cluster information
-    local cluster_uri=$(terraform output -raw adx_cluster_uri 2>/dev/null || echo "https://adx-viytdz.eastus.kusto.windows.net")
-    local database_name=$(terraform output -raw adx_database_name 2>/dev/null || echo "TracingDB")
+    local cluster_uri=$(terraform output -raw adx_cluster_uri 2>/dev/null || echo "")
+    local database_name=$(terraform output -raw adx_database_name 2>/dev/null || echo "")
+    
+    if [ -z "$cluster_uri" ] || [ -z "$database_name" ]; then
+        echo -e "${RED}[ERROR] Cannot get cluster URI or database name from terraform outputs${NC}"
+        exit 1
+    fi
     
     echo -e "${GREEN}[INFO] Cluster URI: $cluster_uri${NC}"
     echo -e "${GREEN}[INFO] Database: $database_name${NC}"
@@ -136,8 +141,19 @@ wait_for_cluster() {
     local attempt=1
     local cluster_state=""
     
+    # Get cluster information from terraform outputs
+    local cluster_name=$(terraform output -raw adx_cluster_name 2>/dev/null || echo "")
+    local resource_group=$(terraform output -raw resource_group_name 2>/dev/null || echo "")
+    
+    if [ -z "$cluster_name" ] || [ -z "$resource_group" ]; then
+        echo -e "${RED}[ERROR] Cannot get cluster name or resource group from terraform outputs${NC}"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}   Using cluster: $cluster_name in resource group: $resource_group${NC}"
+    
     while [ $attempt -le $max_attempts ]; do
-        cluster_state=$(az kusto cluster show --name "adx-viytdz" --resource-group "rg-adx-viytdz" --query "state" -o tsv 2>/dev/null || echo "Unknown")
+        cluster_state=$(az kusto cluster show --name "$cluster_name" --resource-group "$resource_group" --query "state" -o tsv 2>/dev/null || echo "Unknown")
         
         echo -e "${YELLOW}   Attempt $attempt/$max_attempts - Cluster state: $cluster_state${NC}"
         
@@ -146,7 +162,7 @@ wait_for_cluster() {
             return 0
         elif [ "$cluster_state" = "Stopped" ]; then
             echo -e "${YELLOW}[STARTING] Starting stopped cluster...${NC}"
-            az kusto cluster start --name "adx-viytdz" --resource-group "rg-adx-viytdz" --no-wait
+            az kusto cluster start --name "$cluster_name" --resource-group "$resource_group" --no-wait
         fi
         
         echo -e "${YELLOW}   Waiting 60 seconds before next check...${NC}"
@@ -194,8 +210,14 @@ finalize_setup() {
     
     # Get outputs and append to .env file
     local env_file="../../.env"
-    local cluster_uri=$(terraform output -raw adx_cluster_uri 2>/dev/null || echo "https://adx-viytdz.eastus.kusto.windows.net")
-    local database_name=$(terraform output -raw adx_database_name 2>/dev/null || echo "TracingDB")
+    local cluster_uri=$(terraform output -raw adx_cluster_uri 2>/dev/null || echo "")
+    local database_name=$(terraform output -raw adx_database_name 2>/dev/null || echo "")
+    local cluster_name=$(terraform output -raw adx_cluster_name 2>/dev/null || echo "")
+    
+    if [ -z "$cluster_uri" ] || [ -z "$database_name" ] || [ -z "$cluster_name" ]; then
+        echo -e "${RED}[ERROR] Cannot get required outputs from terraform${NC}"
+        return 1
+    fi
     
     # Remove old ADX entries if they exist
     if [ -f "$env_file" ]; then
@@ -208,7 +230,7 @@ finalize_setup() {
 # Azure Data Explorer Configuration
 ADX_CLUSTER_URI=$cluster_uri
 ADX_DATABASE_NAME=$database_name
-ADX_WEB_UI=https://dataexplorer.azure.com/clusters/adx-viytdz.eastus/databases/TracingDB
+ADX_WEB_UI=https://dataexplorer.azure.com/clusters/$cluster_name.eastus/databases/$database_name
 EOF
     
     echo -e "${GREEN}[SUCCESS] Environment variables updated in $env_file${NC}"
@@ -229,7 +251,7 @@ print_success_summary() {
     echo -e "   ${CYAN}source ../../.env${NC}"
     echo ""
     echo -e "${YELLOW}2. Open ADX Web UI:${NC}"
-    echo -e "   ${CYAN}https://dataexplorer.azure.com/clusters/adx-viytdz.eastus/databases/TracingDB${NC}"
+    echo -e "   ${CYAN}https://dataexplorer.azure.com/clusters/$cluster_name.eastus/databases/$database_name${NC}"
     echo ""
     echo -e "${YELLOW}3. Test with sample queries:${NC}"
     echo -e "   ${CYAN}SecurityTraces | take 10${NC}"
