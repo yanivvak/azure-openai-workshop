@@ -111,7 +111,7 @@ output "adx_security_info" {
 # Connection URLs
 output "adx_web_ui_url" {
   description = "URL to access Azure Data Explorer Web UI"
-  value       = "https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}"
+  value       = "https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}.${azurerm_kusto_cluster.adx_cluster.location}"
 }
 
 output "azure_portal_adx_url" {
@@ -133,7 +133,7 @@ Cluster Information:
 └── Resource Group: ${azurerm_resource_group.adx_rg.name}
 
 Quick Access Links:
-├── ADX Web UI: https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}
+├── ADX Web UI: https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}.${azurerm_kusto_cluster.adx_cluster.location}
 └── Azure Portal: https://portal.azure.com/#resource/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.adx_rg.name}/providers/Microsoft.Kusto/clusters/${azurerm_kusto_cluster.adx_cluster.name}
 
 Security Tables Created:
