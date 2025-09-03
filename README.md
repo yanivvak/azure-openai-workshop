@@ -15,7 +15,6 @@ A comprehensive hands-on workshop for building AI applications with Azure AI Fou
 Before starting, ensure you have:
 
 - **Azure Account** - [Get free Azure credits](https://aka.ms/free)
-- **Azure OpenAI Access** - [Request access](https://learn.microsoft.com/azure/ai-services/openai/overview#how-do-i-get-access-to-azure-openai) to Azure OpenAI Service
 - **Azure CLI** - For authentication and infrastructure deployment
 - **Python 3.12+** - Required for the workshop environment
 
