@@ -52,6 +52,8 @@ cd azure-openai-workshop
 
 # Install uv (modern Python dependency manager)
 curl -LsSf https://astral.sh/uv/install.sh | sh
+# for Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 # Install dependencies
 uv sync
@@ -62,15 +64,8 @@ uv run python validate_setup.py
 
 ### Step 2: Deploy Azure Infrastructure
 
-Choose your preferred deployment method:
 
-**Option A: Bicep (Azure-native)**
-```bash
-cd infrastructure/bicep
-./deploy.sh
-```
-
-**Option B: Terraform (Multi-cloud)**
+**Terraform (Multi-cloud)**
 ```bash
 cd infrastructure/terraform
 ./deploy.sh
