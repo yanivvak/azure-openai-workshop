@@ -107,12 +107,29 @@ deploy_infrastructure() {
     echo -e "${YELLOW}⏳ Applying Terraform configuration...${NC}"
     echo -e "${YELLOW}   This may take 10-15 minutes for ADX cluster creation...${NC}"
     
-    if terraform apply -auto-approve; then
-        echo -e "${GREEN}[SUCCESS] Infrastructure deployment completed ✅ successfully${NC}"
-    else
-        echo -e "${RED}[❌ ERROR] Infrastructure deployment ❌ failed${NC}"
-        exit 1
-    fi
+    # Apply with retries for potential network issues
+    local max_attempts=3
+    local attempt=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        echo -e "${YELLOW}   Deployment attempt $attempt of $max_attempts...${NC}"
+        
+        if terraform apply -auto-approve; then
+            echo -e "${GREEN}[SUCCESS] Infrastructure deployment completed ✅ successfully${NC}"
+            break
+        else
+            if [ $attempt -eq $max_attempts ]; then
+                echo -e "${RED}[❌ ERROR] Infrastructure deployment ❌ failed after $max_attempts attempts${NC}"
+                echo -e "${YELLOW}[INFO] This might be due to temporary network issues with Azure Storage API${NC}"
+                echo -e "${YELLOW}[INFO] Try running the deployment again in a few minutes${NC}"
+                exit 1
+            else
+                echo -e "${YELLOW}[WARNING] Deployment attempt $attempt failed, retrying in 30 seconds...${NC}"
+                sleep 30
+                ((attempt++))
+            fi
+        fi
+    done
     
     # Get cluster information
     local cluster_uri=$(terraform output -raw adx_cluster_uri 2>/dev/null || echo "")
@@ -213,6 +230,7 @@ finalize_setup() {
     local cluster_uri=$(terraform output -raw adx_cluster_uri 2>/dev/null || echo "")
     local database_name=$(terraform output -raw adx_database_name 2>/dev/null || echo "")
     local cluster_name=$(terraform output -raw adx_cluster_name 2>/dev/null || echo "")
+    local adx_web_ui_complete=$(terraform output -raw adx_web_ui_with_database_url 2>/dev/null || echo "")
     
     if [ -z "$cluster_uri" ] || [ -z "$database_name" ] || [ -z "$cluster_name" ]; then
         echo -e "${RED}[ERROR] Cannot get required outputs from terraform${NC}"
@@ -230,7 +248,7 @@ finalize_setup() {
 # Azure Data Explorer Configuration
 ADX_CLUSTER_URI=$cluster_uri
 ADX_DATABASE_NAME=$database_name
-ADX_WEB_UI=https://dataexplorer.azure.com/clusters/$cluster_name.eastus/databases/$database_name
+ADX_WEB_UI=$adx_web_ui_complete
 EOF
     
     echo -e "${GREEN}[SUCCESS] Environment variables updated in $env_file${NC}"
@@ -251,7 +269,12 @@ print_success_summary() {
     echo -e "   ${CYAN}source ../../.env${NC}"
     echo ""
     echo -e "${YELLOW}2. Open ADX Web UI:${NC}"
-    echo -e "   ${CYAN}https://dataexplorer.azure.com/clusters/$cluster_name.eastus/databases/$database_name${NC}"
+    local adx_web_ui_complete=$(terraform output -raw adx_web_ui_with_database_url 2>/dev/null || echo "")
+    if [ -n "$adx_web_ui_complete" ]; then
+        echo -e "   ${CYAN}$adx_web_ui_complete${NC}"
+    else
+        echo -e "   ${CYAN}Check terraform outputs for ADX Web UI URL${NC}"
+    fi
     echo ""
     echo -e "${YELLOW}3. Test with sample queries:${NC}"
     echo -e "   ${CYAN}SecurityTraces | take 10${NC}"

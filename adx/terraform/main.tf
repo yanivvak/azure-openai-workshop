@@ -73,13 +73,16 @@ resource "azurerm_storage_account" "adx_storage" {
   account_replication_type = "LRS"
   account_kind            = "StorageV2"
 
-  # Security settings
+  # Security settings - Updated for ADX compatibility
   min_tls_version                 = "TLS1_2"
   public_network_access_enabled   = true
   shared_access_key_enabled       = true
   allow_nested_items_to_be_public = false
 
-  # Enable blob properties
+  # Disable features that may cause authentication issues with ADX
+  is_hns_enabled = false
+
+  # Enable blob properties without immediate lifecycle management
   blob_properties {
     delete_retention_policy {
       days = var.trace_retention_days
@@ -90,6 +93,20 @@ resource "azurerm_storage_account" "adx_storage" {
   }
 
   tags = local.common_tags
+
+  # Add timeout for resource creation
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
+
+  # Lifecycle to ignore queue properties that may cause issues
+  lifecycle {
+    ignore_changes = [
+      queue_properties
+    ]
+  }
 }
 
 # Storage Container for trace data
@@ -97,6 +114,14 @@ resource "azurerm_storage_container" "trace_data" {
   name                  = "trace-data"
   storage_account_name  = azurerm_storage_account.adx_storage.name
   container_access_type = "private"
+
+  depends_on = [azurerm_storage_account.adx_storage]
+
+  timeouts {
+    create = "5m"
+    update = "5m"
+    delete = "5m"
+  }
 }
 
 # Event Hub Namespace for streaming data ingestion

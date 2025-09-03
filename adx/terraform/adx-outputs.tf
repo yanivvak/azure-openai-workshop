@@ -114,6 +114,11 @@ output "adx_web_ui_url" {
   value       = "https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}.${azurerm_kusto_cluster.adx_cluster.location}"
 }
 
+output "adx_web_ui_with_database_url" {
+  description = "Complete URL to access Azure Data Explorer Web UI with database"
+  value       = "https://dataexplorer.azure.com/clusters/${azurerm_kusto_cluster.adx_cluster.name}.${azurerm_kusto_cluster.adx_cluster.location}/databases/${azurerm_kusto_database.tracing_db.name}"
+}
+
 output "azure_portal_adx_url" {
   description = "URL to access ADX cluster in Azure Portal"
   value       = "https://portal.azure.com/#@${data.azurerm_client_config.current.tenant_id}/resource/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.adx_rg.name}/providers/Microsoft.Kusto/clusters/${azurerm_kusto_cluster.adx_cluster.name}"
