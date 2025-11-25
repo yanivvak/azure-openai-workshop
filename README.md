@@ -8,27 +8,16 @@ A comprehensive hands-on workshop for building AI applications with Azure AI Fou
 - Implement monitoring and tracing for AI applications  
 - Build intelligent agent-based applications
 - Work with Azure AI Foundry SDK
-- **NEW:** Enterprise-scale security analytics with Azure Data Explorer
 
 ## Prerequisites
 
 Before starting, ensure you have:
 
 - **Azure Account** - [Get free Azure credits](https://aka.ms/free)
-- **Azure CLI** - For authentication and infrastructure deployment
-- **Python 3.12+** - Required for the workshop environment
-
-### Install Azure CLI
-
-Choose your platform:
-
-| Platform | Command |
-|----------|---------|
-| **macOS** | `brew install azure-cli` |
-| **Windows** | `winget install Microsoft.AzureCLI` |
-| **Linux (Ubuntu/Debian)** | `curl -sL https://aka.ms/InstallAzureCLIDeb \| sudo bash` |
-
-For other platforms, see the [Azure CLI installation guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
+- [**Azure CLI**](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - For authentication and infrastructure deployment
+- [**Terraform**](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) - For infrastructure as code deployment
+- [**Python 3.12+**](https://www.python.org/downloads/) - Required for the workshop environment
+- [**UV**](https://docs.astral.sh/uv/getting-started/installation/) modern Python dependency manager
 
 ### Authenticate with Azure
 
@@ -44,31 +33,30 @@ az account show
 
 ### Step 1: Clone and Setup Environment
 
+**Clone the repository:**
 ```bash
-# Clone the repository
 git clone https://github.com/yanivvak/azure-openai-workshop.git
 cd azure-openai-workshop
-
-# Install uv (modern Python dependency manager)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# for Windows
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Install dependencies
+```
+**Install dependencies:**
+```bash
 uv sync
+```
 
-# Validate installation
+**Validate installation:**
+```bash
 uv run python validate_setup.py
 ```
 
 ### Step 2: Deploy Azure Infrastructure
 
+**Using Terraform (Multi-cloud):**
 
-**Terraform (Multi-cloud)**
-```bash
-cd infrastructure/terraform
-./deploy.sh
-```
+| Platform | Command |
+|----------|---------|
+| **macOS/Linux** | `cd infrastructure/terraform && ./deploy.sh` |
+| **Windows (PowerShell)** | `cd infrastructure/terraform; terraform init; terraform apply` |
+| **Windows (Git Bash)** | `cd infrastructure/terraform && ./deploy.sh` |
 
 This deployment creates:
 - Azure AI Foundry resource
@@ -79,10 +67,12 @@ This deployment creates:
 ### Step 3: Configure Environment
 
 1. **Copy environment template:**
-   ```bash
-   cd ../../
-   cp .env.example .env
-   ```
+   
+   | Platform | Command |
+   |----------|---------|
+   | **macOS/Linux/Git Bash** | `cd ../../ && cp .env.example .env` |
+   | **Windows (PowerShell)** | `cd ..\..; Copy-Item .env.example .env` |
+   | **Windows (Command Prompt)** | `cd ..\.. && copy .env.example .env` |
 
 2. **Update required variables** in `.env` using deployment outputs:
    ```bash
@@ -152,10 +142,25 @@ This checks all required packages, Azure SDK integration, and environment config
 
 Verify your environment variables:
 
+**macOS/Linux/Git Bash:**
 ```bash
 echo "Endpoint: $AZURE_OPENAI_ENDPOINT"
 echo "Deployment: $AZURE_OPENAI_DEPLOYMENT_NAME" 
 echo "API Version: $AZURE_OPENAI_API_VERSION"
+```
+
+**Windows (PowerShell):**
+```powershell
+Write-Host "Endpoint: $env:AZURE_OPENAI_ENDPOINT"
+Write-Host "Deployment: $env:AZURE_OPENAI_DEPLOYMENT_NAME"
+Write-Host "API Version: $env:AZURE_OPENAI_API_VERSION"
+```
+
+**Windows (Command Prompt):**
+```cmd
+echo Endpoint: %AZURE_OPENAI_ENDPOINT%
+echo Deployment: %AZURE_OPENAI_DEPLOYMENT_NAME%
+echo API Version: %AZURE_OPENAI_API_VERSION%
 ```
 
 ## Advanced Configuration
