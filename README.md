@@ -13,7 +13,7 @@ A comprehensive hands-on workshop for building AI applications with Azure AI Fou
 
 Before starting, ensure you have:
 
-- **Azure Account** - [Get free Azure credits](https://aka.ms/free)
+- [**Azure Account**](https://aka.ms/free) - Get free Azure credits
 - [**Azure CLI**](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) - For authentication and infrastructure deployment
 - [**Terraform**](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) - For infrastructure as code deployment
 - [**Python 3.12+**](https://www.python.org/downloads/) - Required for the workshop environment
