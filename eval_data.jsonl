@@ -1,0 +1,3 @@
+{"query": "What is the capital of France?", "response": "Paris is the capital of France.", "context": "Paris is the capital and largest city of France.", "ground_truth": "Paris"}
+{"query": "Who invented the telephone?", "response": "Alexander Graham Bell invented the telephone.", "context": "The telephone was invented by Alexander Graham Bell in 1876.", "ground_truth": "Alexander Graham Bell"}
+{"query": "What is Python?", "response": "Python is a programming language.", "context": "Python is a high-level, interpreted programming language.", "ground_truth": "A programming language"}
